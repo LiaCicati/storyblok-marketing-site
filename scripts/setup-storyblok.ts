@@ -1363,18 +1363,19 @@ async function main() {
         slug: story.slug,
         parent_id: pagesFolderId,
         content: mergedContent,
-        // Set path to clean URL so visual editor preview uses /services not /pages/services
-        path: `${story.slug}/`,
+        // Clear any custom path so Storyblok uses full_slug for preview
+        // Middleware handles stripping the pages/ prefix
+        path: "",
       },
       publish: 1,
     };
 
     const existing = currentSlugMap.get(fullSlug);
     if (existing) {
-      console.log(`  Updating: ${story.name} (/${fullSlug}) → preview: /${story.slug}/`);
+      console.log(`  Updating: ${story.name} (/${fullSlug})`);
       await apiSafe(`/stories/${existing.id}`, "PUT", payload);
     } else {
-      console.log(`  Creating: ${story.name} (/${fullSlug}) [in 📁 pages/] → preview: /${story.slug}/`);
+      console.log(`  Creating: ${story.name} (/${fullSlug}) [in 📁 pages/]`);
       await apiSafe("/stories", "POST", payload);
     }
     await sleep(300);

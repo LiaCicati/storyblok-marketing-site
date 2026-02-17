@@ -57,7 +57,8 @@ export function middleware(request: NextRequest) {
   // Strip folder prefixes (e.g., /pages/services → /services) so URLs stay clean
   // This is needed because Storyblok stores stories in folders (pages/services)
   // but our Next.js routes use clean URLs (/en/services)
-  const cleanPathname = pathname.replace(/^\/pages\//, "/");
+  // Also strip trailing slashes that may come from Storyblok's path field
+  const cleanPathname = pathname.replace(/^\/pages\//, "/").replace(/\/+$/, "") || "/";
 
   const localizedPath = `/${locale}${cleanPathname === "/" ? "" : cleanPathname}`;
 
