@@ -1156,13 +1156,58 @@ const romanianTranslations: Record<string, any> = {
   },
 };
 
+// ---------- i18n Merge Helper ----------
+// Storyblok field-level translations use __i18n__<lang> suffix on field names.
+// This function takes an English content object and a Romanian translation object
+// (with the same structure) and merges them so that each translated field appears
+// as fieldname__i18n__ro alongside the English fieldname in the same object.
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+function mergeTranslations(en: any, ro: any, lang = "ro"): any {
+  if (!ro) return en;
+  if (Array.isArray(en) && Array.isArray(ro)) {
+    // For arrays (e.g., body bloks, buttons, features), merge element by element
+    return en.map((enItem: any, i: number) => {
+      const roItem = ro[i];
+      if (!roItem) return enItem;
+      return mergeTranslations(enItem, roItem, lang);
+    });
+  }
+  if (typeof en === "object" && en !== null && typeof ro === "object" && ro !== null && !Array.isArray(en)) {
+    const result: any = { ...en };
+    for (const key of Object.keys(ro)) {
+      if (key === "_uid" || key === "component" || key === "fieldtype" || key === "linktype") {
+        // Keep structural fields from English, skip from Romanian
+        continue;
+      }
+      if (Array.isArray(en[key]) && Array.isArray(ro[key])) {
+        // Recurse into arrays (nested bloks)
+        result[key] = mergeTranslations(en[key], ro[key], lang);
+      } else if (typeof en[key] === "object" && en[key] !== null && typeof ro[key] === "object" && ro[key] !== null && !Array.isArray(en[key])) {
+        // For richtext objects, treat as a translated value (not recursive merge)
+        if (en[key].type === "doc" || ro[key].type === "doc") {
+          result[`${key}__i18n__${lang}`] = ro[key];
+        } else {
+          // Other objects: recurse
+          result[key] = mergeTranslations(en[key], ro[key], lang);
+        }
+      } else {
+        // Scalar field: add __i18n__ro variant
+        result[`${key}__i18n__${lang}`] = ro[key];
+      }
+    }
+    return result;
+  }
+  return en;
+}
+
 // ---------- Main ----------
 
 async function main() {
   console.log("=== Storyblok Setup Script ===\n");
 
   // Step 0: Configure i18n on the Storyblok space
-  console.log("[0/4] Configuring i18n (English + Romanian)...");
+  console.log("[0/3] Configuring i18n (English + Romanian)...");
   try {
     await apiSafe("", "PUT", {
       space: {
@@ -1179,16 +1224,15 @@ async function main() {
   }
   await sleep(300);
 
-  // Step 1: Delete existing default "page" component if it exists with a different schema
-  console.log("[1/4] Fetching existing components...");
+  // Step 1: Fetch/create components
+  console.log("[1/3] Fetching existing components...");
   const { components: existing } = await apiSafe("/components");
   const existingMap = new Map<string, number>();
   for (const comp of existing) {
     existingMap.set(comp.name, comp.id);
   }
 
-  // Step 2: Create/update components (with translatable fields)
-  console.log("[2/4] Creating components with translatable fields...\n");
+  console.log("[2/3] Creating components with translatable fields...\n");
   for (const comp of components) {
     const existingId = existingMap.get(comp.name);
 
@@ -1209,13 +1253,12 @@ async function main() {
       console.log(`  Creating: ${comp.display_name} (${comp.name})`);
       await apiSafe("/components", "POST", payload);
     }
-    await sleep(200); // Be gentle with rate limits
+    await sleep(200);
   }
 
-  // Step 3: Create stories (English default content)
-  console.log("\n[3/4] Creating seed content (English)...\n");
+  // Step 3: Create stories with English + Romanian inline translations
+  console.log("\n[3/3] Creating seed content (English + Romanian)...\n");
 
-  // First check for existing stories
   const { stories: existingStories } = await apiSafe("/stories");
   const existingSlugs = new Map<string, number>();
   for (const s of existingStories) {
@@ -1223,11 +1266,17 @@ async function main() {
   }
 
   for (const story of stories) {
+    // Merge Romanian translations inline using __i18n__ro field names
+    const roTranslation = romanianTranslations[story.slug];
+    const mergedContent = roTranslation
+      ? mergeTranslations(story.content, roTranslation)
+      : story.content;
+
     const payload = {
       story: {
         name: story.name,
         slug: story.slug,
-        content: story.content,
+        content: mergedContent,
       },
       publish: 1,
     };
@@ -1239,46 +1288,6 @@ async function main() {
     } else {
       console.log(`  Creating: ${story.name} (/${story.slug})`);
       await apiSafe("/stories", "POST", payload);
-    }
-    await sleep(300);
-  }
-
-  // Step 4: Seed Romanian translations
-  console.log("\n[4/4] Seeding Romanian translations...\n");
-
-  // Re-fetch stories to get IDs (in case they were just created)
-  const { stories: allStories } = await apiSafe("/stories");
-  const storyIdMap = new Map<string, number>();
-  for (const s of allStories) {
-    storyIdMap.set(s.slug, s.id);
-  }
-
-  for (const [slug, roContent] of Object.entries(romanianTranslations)) {
-    const storyId = storyIdMap.get(slug);
-    if (!storyId) {
-      console.log(`  Skipping ${slug}: story not found`);
-      continue;
-    }
-
-    // Fetch the full story to get its current content
-    const { story: fullStory } = await apiSafe(`/stories/${storyId}`);
-    await sleep(200);
-
-    // Merge Romanian translations into the story content
-    const translatedContent = { ...fullStory.content, ...roContent };
-
-    try {
-      await apiSafe(`/stories/${storyId}`, "PUT", {
-        story: {
-          content: translatedContent,
-          lang: "ro",
-        },
-        publish: 1,
-      });
-      console.log(`  \u2713 Romanian: ${slug}`);
-    } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : String(err);
-      console.log(`  \u2717 Failed ${slug}: ${message}`);
     }
     await sleep(300);
   }
