@@ -28,8 +28,10 @@ export interface NavLinkBlok extends SbBlokData {
 export interface ConfigBlok extends SbBlokData {
   component: "config";
   site_name: string;
-  footer_tagline: string;
   header_nav: NavLinkBlok[];
+  header_cta_label: string;
+  header_cta_link: LinkBlok;
+  footer_tagline: string;
   footer_columns: FooterColumnBlok[];
   social_links: SocialLinkBlok[];
   copyright_text: string;

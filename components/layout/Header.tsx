@@ -2,9 +2,9 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import type { NavLinkBlok } from "@/lib/types";
+import type { NavLinkBlok, LinkBlok } from "@/lib/types";
 
-function resolveLink(link: NavLinkBlok["link"]): string {
+function resolveLink(link: NavLinkBlok["link"] | LinkBlok | undefined): string {
   if (!link) return "/";
   if (link.linktype === "story") {
     return `/${link.cached_url}`.replace(/\/+$/, "") || "/";
@@ -15,9 +15,11 @@ function resolveLink(link: NavLinkBlok["link"]): string {
 interface HeaderProps {
   siteName: string;
   navLinks: NavLinkBlok[];
+  ctaLabel?: string;
+  ctaLink?: LinkBlok;
 }
 
-export default function Header({ siteName, navLinks }: HeaderProps) {
+export default function Header({ siteName, navLinks, ctaLabel, ctaLink }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
@@ -39,6 +41,14 @@ export default function Header({ siteName, navLinks }: HeaderProps) {
                 {item.label}
               </Link>
             ))}
+            {ctaLabel && (
+              <Link
+                href={resolveLink(ctaLink)}
+                className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-500 transition-colors"
+              >
+                {ctaLabel}
+              </Link>
+            )}
           </nav>
 
           {/* Mobile hamburger */}
@@ -86,6 +96,15 @@ export default function Header({ siteName, navLinks }: HeaderProps) {
               {item.label}
             </Link>
           ))}
+          {ctaLabel && (
+            <Link
+              href={resolveLink(ctaLink)}
+              className="block rounded-lg bg-primary-600 px-3 py-2 text-center text-base font-semibold text-white hover:bg-primary-500 transition-colors"
+              onClick={() => setMobileOpen(false)}
+            >
+              {ctaLabel}
+            </Link>
+          )}
         </nav>
       </div>
     </header>

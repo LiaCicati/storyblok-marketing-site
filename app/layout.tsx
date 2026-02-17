@@ -35,6 +35,8 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <Header
               siteName={config?.site_name || "Storyblok Site"}
               navLinks={config?.header_nav || []}
+              ctaLabel={config?.header_cta_label || ""}
+              ctaLink={config?.header_cta_link}
             />
             <div className="flex-1">{children}</div>
             <Footer

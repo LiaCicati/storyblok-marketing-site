@@ -149,9 +149,12 @@ const components: ComponentDef[] = [
         restrict_components: true,
         component_whitelist: ["nav_link"],
       },
+      header_cta_label: { type: "text", pos: 2, display_name: "Header CTA Label" },
+      header_cta_link: { type: "multilink", pos: 3, display_name: "Header CTA Link" },
+      footer_tagline: { type: "text", pos: 4, display_name: "Footer Tagline" },
       footer_columns: {
         type: "bloks",
-        pos: 2,
+        pos: 5,
         display_name: "Footer Columns",
         restrict_type: "groups",
         restrict_components: true,
@@ -159,14 +162,13 @@ const components: ComponentDef[] = [
       },
       social_links: {
         type: "bloks",
-        pos: 3,
+        pos: 6,
         display_name: "Social Links",
         restrict_type: "groups",
         restrict_components: true,
         component_whitelist: ["social_link"],
       },
-      footer_tagline: { type: "text", pos: 4, display_name: "Footer Tagline" },
-      copyright_text: { type: "text", pos: 5, display_name: "Copyright Text" },
+      copyright_text: { type: "text", pos: 7, display_name: "Copyright Text" },
     },
   },
   // --- Hero Button (nestable) ---
@@ -512,6 +514,8 @@ function uid() {
 const configContent = {
   component: "config",
   site_name: "Nexus Digital",
+  header_cta_label: "Get Started",
+  header_cta_link: { id: "", url: "/contact", linktype: "url", fieldtype: "multilink", cached_url: "/contact" },
   footer_tagline: "Building extraordinary digital experiences for ambitious companies worldwide.",
   header_nav: [
     { _uid: uid(), component: "nav_link", label: "Home", link: { id: "", url: "/", linktype: "url", fieldtype: "multilink", cached_url: "/" } },
