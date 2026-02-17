@@ -165,7 +165,8 @@ const components: ComponentDef[] = [
         restrict_components: true,
         component_whitelist: ["social_link"],
       },
-      copyright_text: { type: "text", pos: 4, display_name: "Copyright Text" },
+      footer_tagline: { type: "text", pos: 4, display_name: "Footer Tagline" },
+      copyright_text: { type: "text", pos: 5, display_name: "Copyright Text" },
     },
   },
   // --- Hero Button (nestable) ---
@@ -340,6 +341,7 @@ const components: ComponentDef[] = [
       button_label: { type: "text", pos: 4, display_name: "Button Label" },
       button_link: { type: "multilink", pos: 5, display_name: "Button Link" },
       is_popular: { type: "boolean", pos: 6, display_name: "Popular Badge", default_value: false },
+      popular_badge_text: { type: "text", pos: 7, display_name: "Popular Badge Text", default_value: "Most Popular" },
     },
   },
   // --- Pricing Table ---
@@ -368,6 +370,15 @@ const components: ComponentDef[] = [
     schema: {
       title: { type: "text", pos: 0, display_name: "Title" },
       subtitle: { type: "text", pos: 1, display_name: "Subtitle" },
+      name_label: { type: "text", pos: 2, display_name: "Name Label", default_value: "Name" },
+      name_placeholder: { type: "text", pos: 3, display_name: "Name Placeholder", default_value: "Your name" },
+      email_label: { type: "text", pos: 4, display_name: "Email Label", default_value: "Email" },
+      email_placeholder: { type: "text", pos: 5, display_name: "Email Placeholder", default_value: "you@example.com" },
+      message_label: { type: "text", pos: 6, display_name: "Message Label", default_value: "Message" },
+      message_placeholder: { type: "text", pos: 7, display_name: "Message Placeholder", default_value: "How can we help you?" },
+      button_label: { type: "text", pos: 8, display_name: "Button Label", default_value: "Send Message" },
+      success_title: { type: "text", pos: 9, display_name: "Success Title", default_value: "Thank you!" },
+      success_message: { type: "text", pos: 10, display_name: "Success Message", default_value: "Your message has been received. We'll get back to you shortly." },
     },
   },
   // --- Logo Item (nestable) ---
@@ -501,6 +512,7 @@ function uid() {
 const configContent = {
   component: "config",
   site_name: "Nexus Digital",
+  footer_tagline: "Building extraordinary digital experiences for ambitious companies worldwide.",
   header_nav: [
     { _uid: uid(), component: "nav_link", label: "Home", link: { id: "", url: "/", linktype: "url", fieldtype: "multilink", cached_url: "/" } },
     { _uid: uid(), component: "nav_link", label: "Services", link: { id: "", url: "/services", linktype: "url", fieldtype: "multilink", cached_url: "/services" } },
@@ -662,6 +674,7 @@ const servicesContent = {
           button_label: "Get Started",
           button_link: { id: "", url: "/contact", linktype: "url", fieldtype: "multilink", cached_url: "/contact" },
           is_popular: false,
+          popular_badge_text: "",
         },
         {
           _uid: uid(),
@@ -673,6 +686,7 @@ const servicesContent = {
           button_label: "Get Started",
           button_link: { id: "", url: "/contact", linktype: "url", fieldtype: "multilink", cached_url: "/contact" },
           is_popular: true,
+          popular_badge_text: "Most Popular",
         },
         {
           _uid: uid(),
@@ -684,6 +698,7 @@ const servicesContent = {
           button_label: "Contact Sales",
           button_link: { id: "", url: "/contact", linktype: "url", fieldtype: "multilink", cached_url: "/contact" },
           is_popular: false,
+          popular_badge_text: "",
         },
       ],
     },
@@ -766,6 +781,15 @@ const contactContent = {
       component: "contact_form",
       title: "Send Us a Message",
       subtitle: "Fill out the form below and our team will respond within one business day.",
+      name_label: "Name",
+      name_placeholder: "Your name",
+      email_label: "Email",
+      email_placeholder: "you@example.com",
+      message_label: "Message",
+      message_placeholder: "How can we help you?",
+      button_label: "Send Message",
+      success_title: "Thank you!",
+      success_message: "Your message has been received. We'll get back to you within one business day.",
     },
     {
       _uid: uid(),

@@ -39,6 +39,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
             <div className="flex-1">{children}</div>
             <Footer
               siteName={config?.site_name || "Storyblok Site"}
+              tagline={config?.footer_tagline || ""}
               columns={config?.footer_columns || []}
               socialLinks={config?.social_links || []}
               copyrightText={config?.copyright_text || ""}

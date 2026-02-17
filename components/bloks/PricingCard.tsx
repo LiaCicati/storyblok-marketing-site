@@ -24,7 +24,7 @@ export default function PricingCard({ blok }: { blok: PricingCardBlok }) {
     >
       {blok.is_popular && (
         <span className="absolute -top-4 left-1/2 -translate-x-1/2 rounded-full bg-primary-600 px-4 py-1 text-xs font-semibold text-white">
-          Most Popular
+          {blok.popular_badge_text || "Most Popular"}
         </span>
       )}
       <h3 className="text-lg font-semibold text-gray-900">{blok.plan_name}</h3>

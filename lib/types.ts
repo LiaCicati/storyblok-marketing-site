@@ -28,6 +28,7 @@ export interface NavLinkBlok extends SbBlokData {
 export interface ConfigBlok extends SbBlokData {
   component: "config";
   site_name: string;
+  footer_tagline: string;
   header_nav: NavLinkBlok[];
   footer_columns: FooterColumnBlok[];
   social_links: SocialLinkBlok[];
@@ -126,12 +127,22 @@ export interface PricingCardBlok extends SbBlokData {
   button_label: string;
   button_link: LinkBlok;
   is_popular: boolean;
+  popular_badge_text: string;
 }
 
 export interface ContactFormBlok extends SbBlokData {
   component: "contact_form";
   title: string;
   subtitle: string;
+  name_label: string;
+  name_placeholder: string;
+  email_label: string;
+  email_placeholder: string;
+  message_label: string;
+  message_placeholder: string;
+  button_label: string;
+  success_title: string;
+  success_message: string;
 }
 
 export interface LogoCloudBlok extends SbBlokData {

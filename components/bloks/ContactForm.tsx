@@ -36,14 +36,18 @@ export default function ContactForm({ blok }: { blok: ContactFormBlok }) {
             >
               <path strokeLinecap="round" strokeLinejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
-            <h3 className="mt-4 text-lg font-semibold text-green-800">Thank you!</h3>
-            <p className="mt-2 text-green-700">Your message has been received. We&apos;ll get back to you soon.</p>
+            <h3 className="mt-4 text-lg font-semibold text-green-800">
+              {blok.success_title || "Thank you!"}
+            </h3>
+            <p className="mt-2 text-green-700">
+              {blok.success_message || "Your message has been received."}
+            </p>
           </div>
         ) : (
           <form onSubmit={handleSubmit} className="space-y-6">
             <div>
               <label htmlFor="contact-name" className="block text-sm font-medium text-gray-700">
-                Name
+                {blok.name_label || "Name"}
               </label>
               <input
                 type="text"
@@ -51,12 +55,12 @@ export default function ContactForm({ blok }: { blok: ContactFormBlok }) {
                 name="name"
                 required
                 className="mt-2 block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:outline-none"
-                placeholder="Your name"
+                placeholder={blok.name_placeholder || "Your name"}
               />
             </div>
             <div>
               <label htmlFor="contact-email" className="block text-sm font-medium text-gray-700">
-                Email
+                {blok.email_label || "Email"}
               </label>
               <input
                 type="email"
@@ -64,12 +68,12 @@ export default function ContactForm({ blok }: { blok: ContactFormBlok }) {
                 name="email"
                 required
                 className="mt-2 block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:outline-none"
-                placeholder="you@example.com"
+                placeholder={blok.email_placeholder || "you@example.com"}
               />
             </div>
             <div>
               <label htmlFor="contact-message" className="block text-sm font-medium text-gray-700">
-                Message
+                {blok.message_label || "Message"}
               </label>
               <textarea
                 id="contact-message"
@@ -77,14 +81,14 @@ export default function ContactForm({ blok }: { blok: ContactFormBlok }) {
                 rows={5}
                 required
                 className="mt-2 block w-full rounded-lg border border-gray-300 px-4 py-3 text-gray-900 shadow-sm focus:border-primary-500 focus:ring-2 focus:ring-primary-500 focus:outline-none resize-y"
-                placeholder="How can we help?"
+                placeholder={blok.message_placeholder || "How can we help?"}
               />
             </div>
             <button
               type="submit"
               className="w-full rounded-lg bg-primary-600 px-6 py-3 text-sm font-semibold text-white shadow-lg hover:bg-primary-500 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-colors"
             >
-              Send Message
+              {blok.button_label || "Send Message"}
             </button>
           </form>
         )}

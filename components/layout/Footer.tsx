@@ -30,12 +30,13 @@ const socialIcons: Record<string, ReactNode> = {
 
 interface FooterProps {
   siteName: string;
+  tagline: string;
   columns: FooterColumnBlok[];
   socialLinks: SocialLinkBlok[];
   copyrightText: string;
 }
 
-export default function Footer({ siteName, columns, socialLinks, copyrightText }: FooterProps) {
+export default function Footer({ siteName, tagline, columns, socialLinks, copyrightText }: FooterProps) {
   return (
     <footer className="bg-gray-900 text-gray-300" role="contentinfo">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
@@ -43,9 +44,11 @@ export default function Footer({ siteName, columns, socialLinks, copyrightText }
           {/* Brand column */}
           <div className="col-span-2 md:col-span-1">
             <span className="text-xl font-bold text-white">{siteName || "Storyblok Site"}</span>
-            <p className="mt-4 text-sm text-gray-400">
-              Building amazing digital experiences with modern technology.
-            </p>
+            {tagline && (
+              <p className="mt-4 text-sm text-gray-400">
+                {tagline}
+              </p>
+            )}
             {socialLinks && socialLinks.length > 0 && (
               <div className="mt-6 flex gap-4">
                 {socialLinks.map((social) => (
