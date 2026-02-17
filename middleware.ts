@@ -4,7 +4,7 @@ import { i18n } from "@/lib/i18n";
 const PUBLIC_FILE = /\.(.*)$/;
 
 export function middleware(request: NextRequest) {
-  const { pathname } = request.nextUrl;
+  const { pathname, searchParams } = request.nextUrl;
 
   // Skip Next.js internals, API routes, draft mode routes, and static files
   if (
@@ -35,15 +35,37 @@ export function middleware(request: NextRequest) {
     return response;
   }
 
-  // No locale prefix — use cookie if available, otherwise default locale
+  // Detect Storyblok visual editor — it loads pages without locale prefix
+  // Use rewrite (not redirect) to preserve the iframe URL and bridge connection
+  const isStoryblokEditor =
+    searchParams.has("_storyblok") ||
+    searchParams.has("_storyblok_tk[space_id]") ||
+    searchParams.has("_storyblok_c");
+
+  // Determine locale from Storyblok language param, cookie, or default
+  const storyblokLang = searchParams.get("_storyblok_lang");
   const cookieLocale = request.cookies.get("NEXT_LOCALE")?.value;
   const locale =
-    cookieLocale && i18n.locales.includes(cookieLocale as (typeof i18n.locales)[number])
+    (storyblokLang && i18n.locales.includes(storyblokLang as (typeof i18n.locales)[number])
+      ? storyblokLang
+      : null) ||
+    (cookieLocale && i18n.locales.includes(cookieLocale as (typeof i18n.locales)[number])
       ? cookieLocale
-      : i18n.defaultLocale;
+      : null) ||
+    i18n.defaultLocale;
 
+  const localizedPath = `/${locale}${pathname === "/" ? "" : pathname}`;
+
+  if (isStoryblokEditor) {
+    // Rewrite: serve the locale route but keep the URL the same for the bridge
+    const url = request.nextUrl.clone();
+    url.pathname = localizedPath;
+    return NextResponse.rewrite(url);
+  }
+
+  // Normal visitors: redirect to locale-prefixed URL
   return NextResponse.redirect(
-    new URL(`/${locale}${pathname === "/" ? "" : pathname}`, request.url)
+    new URL(localizedPath, request.url)
   );
 }
 
