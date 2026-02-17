@@ -1,16 +1,26 @@
-import { storyblokEditable } from "@storyblok/react/rsc";
+"use client";
+
+import { storyblokEditable } from "@storyblok/react";
 import Link from "next/link";
 import type { PricingCardBlok } from "@/lib/types";
+import { useLocale } from "@/lib/locale-context";
 
-function resolveLink(link: PricingCardBlok["button_link"]): string {
-  if (!link) return "/";
+function resolveLink(link: PricingCardBlok["button_link"], locale: string): string {
+  if (!link) return `/${locale}`;
+  let path: string;
   if (link.linktype === "story") {
-    return `/${link.cached_url}`.replace(/\/+$/, "") || "/";
+    path = `/${link.cached_url}`.replace(/\/+$/, "") || "/";
+  } else {
+    path = link.cached_url || link.url || "/";
   }
-  return link.cached_url || link.url || "/";
+  if (path.startsWith("/") && !path.startsWith("http")) {
+    return `/${locale}${path === "/" ? "" : path}`;
+  }
+  return path;
 }
 
 export default function PricingCard({ blok }: { blok: PricingCardBlok }) {
+  const locale = useLocale();
   const features = blok.features
     ? blok.features.split("\n").filter((f) => f.trim())
     : [];
@@ -53,7 +63,7 @@ export default function PricingCard({ blok }: { blok: PricingCardBlok }) {
       )}
       {blok.button_label && (
         <Link
-          href={resolveLink(blok.button_link)}
+          href={resolveLink(blok.button_link, locale)}
           className={`mt-8 block w-full rounded-lg py-3 text-center text-sm font-semibold transition-colors ${
             blok.is_popular
               ? "bg-primary-600 text-white hover:bg-primary-500"

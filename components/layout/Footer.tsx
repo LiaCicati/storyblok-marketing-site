@@ -2,12 +2,19 @@ import type { ReactNode } from "react";
 import Link from "next/link";
 import type { FooterColumnBlok, SocialLinkBlok, NavLinkBlok } from "@/lib/types";
 
-function resolveLink(link: NavLinkBlok["link"]): string {
-  if (!link) return "/";
+function resolveLink(link: NavLinkBlok["link"], locale: string): string {
+  if (!link) return `/${locale}`;
+  let path: string;
   if (link.linktype === "story") {
-    return `/${link.cached_url}`.replace(/\/+$/, "") || "/";
+    path = `/${link.cached_url}`.replace(/\/+$/, "") || "/";
+  } else {
+    path = link.cached_url || link.url || "/";
   }
-  return link.cached_url || link.url || "/";
+  // Only prefix internal links
+  if (path.startsWith("/") && !path.startsWith("http")) {
+    return `/${locale}${path === "/" ? "" : path}`;
+  }
+  return path;
 }
 
 const socialIcons: Record<string, ReactNode> = {
@@ -34,9 +41,10 @@ interface FooterProps {
   columns: FooterColumnBlok[];
   socialLinks: SocialLinkBlok[];
   copyrightText: string;
+  locale: string;
 }
 
-export default function Footer({ siteName, tagline, columns, socialLinks, copyrightText }: FooterProps) {
+export default function Footer({ siteName, tagline, columns, socialLinks, copyrightText, locale }: FooterProps) {
   return (
     <footer className="bg-gray-900 text-gray-300" role="contentinfo">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
@@ -79,7 +87,7 @@ export default function Footer({ siteName, tagline, columns, socialLinks, copyri
                 {column.links?.map((link) => (
                   <li key={link._uid}>
                     <Link
-                      href={resolveLink(link.link)}
+                      href={resolveLink(link.link, locale)}
                       className="text-sm text-gray-400 hover:text-white transition-colors"
                     >
                       {link.label}

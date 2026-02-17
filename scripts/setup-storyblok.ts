@@ -2,6 +2,7 @@
  * Storyblok Setup Script
  *
  * Creates all component blueprints (bloks) and seed content in your Storyblok space.
+ * Configures i18n with English (default) and Romanian.
  *
  * Usage:
  *   1. Set STORYBLOK_PERSONAL_TOKEN and STORYBLOK_SPACE_ID in your .env
@@ -76,6 +77,7 @@ interface ComponentField {
   maximum?: number;
   required?: boolean;
   description?: string;
+  translatable?: boolean;
   [key: string]: unknown;
 }
 
@@ -94,7 +96,7 @@ const components: ComponentDef[] = [
     display_name: "Nav Link",
     is_nestable: true,
     schema: {
-      label: { type: "text", pos: 0, display_name: "Label", required: true },
+      label: { type: "text", pos: 0, display_name: "Label", required: true, translatable: true },
       link: { type: "multilink", pos: 1, display_name: "Link" },
     },
   },
@@ -104,7 +106,7 @@ const components: ComponentDef[] = [
     display_name: "Footer Column",
     is_nestable: true,
     schema: {
-      title: { type: "text", pos: 0, display_name: "Title" },
+      title: { type: "text", pos: 0, display_name: "Title", translatable: true },
       links: {
         type: "bloks",
         pos: 1,
@@ -140,7 +142,7 @@ const components: ComponentDef[] = [
     display_name: "Config",
     is_root: true,
     schema: {
-      site_name: { type: "text", pos: 0, display_name: "Site Name", default_value: "Storyblok Site" },
+      site_name: { type: "text", pos: 0, display_name: "Site Name", default_value: "Storyblok Site", translatable: true },
       header_nav: {
         type: "bloks",
         pos: 1,
@@ -149,9 +151,9 @@ const components: ComponentDef[] = [
         restrict_components: true,
         component_whitelist: ["nav_link"],
       },
-      header_cta_label: { type: "text", pos: 2, display_name: "Header CTA Label" },
+      header_cta_label: { type: "text", pos: 2, display_name: "Header CTA Label", translatable: true },
       header_cta_link: { type: "multilink", pos: 3, display_name: "Header CTA Link" },
-      footer_tagline: { type: "text", pos: 4, display_name: "Footer Tagline" },
+      footer_tagline: { type: "text", pos: 4, display_name: "Footer Tagline", translatable: true },
       footer_columns: {
         type: "bloks",
         pos: 5,
@@ -168,7 +170,7 @@ const components: ComponentDef[] = [
         restrict_components: true,
         component_whitelist: ["social_link"],
       },
-      copyright_text: { type: "text", pos: 7, display_name: "Copyright Text" },
+      copyright_text: { type: "text", pos: 7, display_name: "Copyright Text", translatable: true },
     },
   },
   // --- Hero Button (nestable) ---
@@ -177,7 +179,7 @@ const components: ComponentDef[] = [
     display_name: "Hero Button",
     is_nestable: true,
     schema: {
-      label: { type: "text", pos: 0, display_name: "Label", required: true },
+      label: { type: "text", pos: 0, display_name: "Label", required: true, translatable: true },
       link: { type: "multilink", pos: 1, display_name: "Link" },
       variant: {
         type: "option",
@@ -197,8 +199,8 @@ const components: ComponentDef[] = [
     display_name: "Hero",
     is_nestable: true,
     schema: {
-      headline: { type: "text", pos: 0, display_name: "Headline", required: true },
-      subheadline: { type: "text", pos: 1, display_name: "Subheadline" },
+      headline: { type: "text", pos: 0, display_name: "Headline", required: true, translatable: true },
+      subheadline: { type: "text", pos: 1, display_name: "Subheadline", translatable: true },
       background_image: { type: "asset", pos: 2, display_name: "Background Image", filetypes: ["images"] },
       buttons: {
         type: "bloks",
@@ -246,8 +248,8 @@ const components: ComponentDef[] = [
           { name: "Cloud", value: "cloud" },
         ],
       },
-      title: { type: "text", pos: 1, display_name: "Title", required: true },
-      description: { type: "textarea", pos: 2, display_name: "Description" },
+      title: { type: "text", pos: 1, display_name: "Title", required: true, translatable: true },
+      description: { type: "textarea", pos: 2, display_name: "Description", translatable: true },
     },
   },
   // --- Feature Grid ---
@@ -256,8 +258,8 @@ const components: ComponentDef[] = [
     display_name: "Feature Grid",
     is_nestable: true,
     schema: {
-      title: { type: "text", pos: 0, display_name: "Title" },
-      subtitle: { type: "text", pos: 1, display_name: "Subtitle" },
+      title: { type: "text", pos: 0, display_name: "Title", translatable: true },
+      subtitle: { type: "text", pos: 1, display_name: "Subtitle", translatable: true },
       features: {
         type: "bloks",
         pos: 2,
@@ -274,8 +276,8 @@ const components: ComponentDef[] = [
     display_name: "Text with Image",
     is_nestable: true,
     schema: {
-      title: { type: "text", pos: 0, display_name: "Title" },
-      content: { type: "richtext", pos: 1, display_name: "Content" },
+      title: { type: "text", pos: 0, display_name: "Title", translatable: true },
+      content: { type: "richtext", pos: 1, display_name: "Content", translatable: true },
       image: { type: "asset", pos: 2, display_name: "Image", filetypes: ["images"] },
       image_position: {
         type: "option",
@@ -295,9 +297,9 @@ const components: ComponentDef[] = [
     display_name: "Testimonial Card",
     is_nestable: true,
     schema: {
-      quote: { type: "textarea", pos: 0, display_name: "Quote", required: true },
+      quote: { type: "textarea", pos: 0, display_name: "Quote", required: true, translatable: true },
       author_name: { type: "text", pos: 1, display_name: "Author Name" },
-      author_role: { type: "text", pos: 2, display_name: "Author Role" },
+      author_role: { type: "text", pos: 2, display_name: "Author Role", translatable: true },
       avatar: { type: "asset", pos: 3, display_name: "Avatar", filetypes: ["images"] },
     },
   },
@@ -307,7 +309,7 @@ const components: ComponentDef[] = [
     display_name: "Testimonials",
     is_nestable: true,
     schema: {
-      title: { type: "text", pos: 0, display_name: "Title" },
+      title: { type: "text", pos: 0, display_name: "Title", translatable: true },
       items: {
         type: "bloks",
         pos: 1,
@@ -324,9 +326,9 @@ const components: ComponentDef[] = [
     display_name: "Call to Action",
     is_nestable: true,
     schema: {
-      headline: { type: "text", pos: 0, display_name: "Headline", required: true },
-      body: { type: "textarea", pos: 1, display_name: "Body" },
-      button_label: { type: "text", pos: 2, display_name: "Button Label" },
+      headline: { type: "text", pos: 0, display_name: "Headline", required: true, translatable: true },
+      body: { type: "textarea", pos: 1, display_name: "Body", translatable: true },
+      button_label: { type: "text", pos: 2, display_name: "Button Label", translatable: true },
       button_link: { type: "multilink", pos: 3, display_name: "Button Link" },
     },
   },
@@ -336,14 +338,14 @@ const components: ComponentDef[] = [
     display_name: "Pricing Card",
     is_nestable: true,
     schema: {
-      plan_name: { type: "text", pos: 0, display_name: "Plan Name", required: true },
-      price: { type: "text", pos: 1, display_name: "Price" },
-      period: { type: "text", pos: 2, display_name: "Period", default_value: "month" },
-      features: { type: "textarea", pos: 3, display_name: "Features (one per line)" },
-      button_label: { type: "text", pos: 4, display_name: "Button Label" },
+      plan_name: { type: "text", pos: 0, display_name: "Plan Name", required: true, translatable: true },
+      price: { type: "text", pos: 1, display_name: "Price", translatable: true },
+      period: { type: "text", pos: 2, display_name: "Period", default_value: "month", translatable: true },
+      features: { type: "textarea", pos: 3, display_name: "Features (one per line)", translatable: true },
+      button_label: { type: "text", pos: 4, display_name: "Button Label", translatable: true },
       button_link: { type: "multilink", pos: 5, display_name: "Button Link" },
       is_popular: { type: "boolean", pos: 6, display_name: "Popular Badge", default_value: false },
-      popular_badge_text: { type: "text", pos: 7, display_name: "Popular Badge Text", default_value: "Most Popular" },
+      popular_badge_text: { type: "text", pos: 7, display_name: "Popular Badge Text", default_value: "Most Popular", translatable: true },
     },
   },
   // --- Pricing Table ---
@@ -352,8 +354,8 @@ const components: ComponentDef[] = [
     display_name: "Pricing Table",
     is_nestable: true,
     schema: {
-      title: { type: "text", pos: 0, display_name: "Title" },
-      subtitle: { type: "text", pos: 1, display_name: "Subtitle" },
+      title: { type: "text", pos: 0, display_name: "Title", translatable: true },
+      subtitle: { type: "text", pos: 1, display_name: "Subtitle", translatable: true },
       plans: {
         type: "bloks",
         pos: 2,
@@ -370,17 +372,17 @@ const components: ComponentDef[] = [
     display_name: "Contact Form",
     is_nestable: true,
     schema: {
-      title: { type: "text", pos: 0, display_name: "Title" },
-      subtitle: { type: "text", pos: 1, display_name: "Subtitle" },
-      name_label: { type: "text", pos: 2, display_name: "Name Label", default_value: "Name" },
-      name_placeholder: { type: "text", pos: 3, display_name: "Name Placeholder", default_value: "Your name" },
-      email_label: { type: "text", pos: 4, display_name: "Email Label", default_value: "Email" },
-      email_placeholder: { type: "text", pos: 5, display_name: "Email Placeholder", default_value: "you@example.com" },
-      message_label: { type: "text", pos: 6, display_name: "Message Label", default_value: "Message" },
-      message_placeholder: { type: "text", pos: 7, display_name: "Message Placeholder", default_value: "How can we help you?" },
-      button_label: { type: "text", pos: 8, display_name: "Button Label", default_value: "Send Message" },
-      success_title: { type: "text", pos: 9, display_name: "Success Title", default_value: "Thank you!" },
-      success_message: { type: "text", pos: 10, display_name: "Success Message", default_value: "Your message has been received. We'll get back to you shortly." },
+      title: { type: "text", pos: 0, display_name: "Title", translatable: true },
+      subtitle: { type: "text", pos: 1, display_name: "Subtitle", translatable: true },
+      name_label: { type: "text", pos: 2, display_name: "Name Label", default_value: "Name", translatable: true },
+      name_placeholder: { type: "text", pos: 3, display_name: "Name Placeholder", default_value: "Your name", translatable: true },
+      email_label: { type: "text", pos: 4, display_name: "Email Label", default_value: "Email", translatable: true },
+      email_placeholder: { type: "text", pos: 5, display_name: "Email Placeholder", default_value: "you@example.com", translatable: true },
+      message_label: { type: "text", pos: 6, display_name: "Message Label", default_value: "Message", translatable: true },
+      message_placeholder: { type: "text", pos: 7, display_name: "Message Placeholder", default_value: "How can we help you?", translatable: true },
+      button_label: { type: "text", pos: 8, display_name: "Button Label", default_value: "Send Message", translatable: true },
+      success_title: { type: "text", pos: 9, display_name: "Success Title", default_value: "Thank you!", translatable: true },
+      success_message: { type: "text", pos: 10, display_name: "Success Message", default_value: "Your message has been received. We'll get back to you shortly.", translatable: true },
     },
   },
   // --- Logo Item (nestable) ---
@@ -400,7 +402,7 @@ const components: ComponentDef[] = [
     display_name: "Logo Cloud",
     is_nestable: true,
     schema: {
-      title: { type: "text", pos: 0, display_name: "Title" },
+      title: { type: "text", pos: 0, display_name: "Title", translatable: true },
       logos: {
         type: "bloks",
         pos: 1,
@@ -417,8 +419,8 @@ const components: ComponentDef[] = [
     display_name: "FAQ Item",
     is_nestable: true,
     schema: {
-      question: { type: "text", pos: 0, display_name: "Question", required: true },
-      answer: { type: "richtext", pos: 1, display_name: "Answer" },
+      question: { type: "text", pos: 0, display_name: "Question", required: true, translatable: true },
+      answer: { type: "richtext", pos: 1, display_name: "Answer", translatable: true },
     },
   },
   // --- FAQ ---
@@ -427,8 +429,8 @@ const components: ComponentDef[] = [
     display_name: "FAQ",
     is_nestable: true,
     schema: {
-      title: { type: "text", pos: 0, display_name: "Title" },
-      subtitle: { type: "text", pos: 1, display_name: "Subtitle" },
+      title: { type: "text", pos: 0, display_name: "Title", translatable: true },
+      subtitle: { type: "text", pos: 1, display_name: "Subtitle", translatable: true },
       items: {
         type: "bloks",
         pos: 2,
@@ -445,7 +447,7 @@ const components: ComponentDef[] = [
     display_name: "Rich Text Block",
     is_nestable: true,
     schema: {
-      content: { type: "richtext", pos: 0, display_name: "Content" },
+      content: { type: "richtext", pos: 0, display_name: "Content", translatable: true },
     },
   },
   // --- Blog Post (root) ---
@@ -454,10 +456,10 @@ const components: ComponentDef[] = [
     display_name: "Blog Post",
     is_root: true,
     schema: {
-      title: { type: "text", pos: 0, display_name: "Title", required: true },
-      excerpt: { type: "textarea", pos: 1, display_name: "Excerpt" },
+      title: { type: "text", pos: 0, display_name: "Title", required: true, translatable: true },
+      excerpt: { type: "textarea", pos: 1, display_name: "Excerpt", translatable: true },
       featured_image: { type: "asset", pos: 2, display_name: "Featured Image", filetypes: ["images"] },
-      content: { type: "richtext", pos: 3, display_name: "Content" },
+      content: { type: "richtext", pos: 3, display_name: "Content", translatable: true },
       author: { type: "text", pos: 4, display_name: "Author" },
       published_date: { type: "datetime", pos: 5, display_name: "Published Date" },
     },
@@ -468,8 +470,8 @@ const components: ComponentDef[] = [
     display_name: "Page",
     is_root: true,
     schema: {
-      title: { type: "text", pos: 0, display_name: "Page Title" },
-      description: { type: "text", pos: 1, display_name: "Meta Description" },
+      title: { type: "text", pos: 0, display_name: "Page Title", translatable: true },
+      description: { type: "text", pos: 1, display_name: "Meta Description", translatable: true },
       body: {
         type: "bloks",
         pos: 2,
@@ -851,21 +853,342 @@ const stories = [
   { name: "Blog", slug: "blog", content: blogContent },
 ];
 
+// ---------- Romanian Translations ----------
+
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+const romanianTranslations: Record<string, any> = {
+  config: {
+    site_name: "Nexus Digital",
+    header_cta_label: "\u00CEncepe Acum",
+    footer_tagline: "Construim experien\u021Be digitale extraordinare pentru companii ambi\u021Bioase din \u00EEntreaga lume.",
+    copyright_text: "\u00A9 2025 Nexus Digital. Toate drepturile rezervate.",
+    header_nav: [
+      { _uid: uid(), component: "nav_link", label: "Acas\u0103", link: { id: "", url: "/", linktype: "url", fieldtype: "multilink", cached_url: "/" } },
+      { _uid: uid(), component: "nav_link", label: "Servicii", link: { id: "", url: "/services", linktype: "url", fieldtype: "multilink", cached_url: "/services" } },
+      { _uid: uid(), component: "nav_link", label: "Despre Noi", link: { id: "", url: "/about", linktype: "url", fieldtype: "multilink", cached_url: "/about" } },
+      { _uid: uid(), component: "nav_link", label: "Blog", link: { id: "", url: "/blog", linktype: "url", fieldtype: "multilink", cached_url: "/blog" } },
+      { _uid: uid(), component: "nav_link", label: "Contact", link: { id: "", url: "/contact", linktype: "url", fieldtype: "multilink", cached_url: "/contact" } },
+    ],
+    footer_columns: [
+      {
+        _uid: uid(),
+        component: "footer_column",
+        title: "Companie",
+        links: [
+          { _uid: uid(), component: "nav_link", label: "Despre Noi", link: { id: "", url: "/about", linktype: "url", fieldtype: "multilink", cached_url: "/about" } },
+          { _uid: uid(), component: "nav_link", label: "Servicii", link: { id: "", url: "/services", linktype: "url", fieldtype: "multilink", cached_url: "/services" } },
+          { _uid: uid(), component: "nav_link", label: "Blog", link: { id: "", url: "/blog", linktype: "url", fieldtype: "multilink", cached_url: "/blog" } },
+        ],
+      },
+      {
+        _uid: uid(),
+        component: "footer_column",
+        title: "Asisten\u021B\u0103",
+        links: [
+          { _uid: uid(), component: "nav_link", label: "Contact", link: { id: "", url: "/contact", linktype: "url", fieldtype: "multilink", cached_url: "/contact" } },
+          { _uid: uid(), component: "nav_link", label: "\u00CEntreb\u0103ri Frecvente", link: { id: "", url: "/contact", linktype: "url", fieldtype: "multilink", cached_url: "/contact" } },
+        ],
+      },
+      {
+        _uid: uid(),
+        component: "footer_column",
+        title: "Legal",
+        links: [
+          { _uid: uid(), component: "nav_link", label: "Politica de Confiden\u021Bialitate", link: { id: "", url: "#", linktype: "url", fieldtype: "multilink", cached_url: "#" } },
+          { _uid: uid(), component: "nav_link", label: "Termeni \u0219i Condi\u021Bii", link: { id: "", url: "#", linktype: "url", fieldtype: "multilink", cached_url: "#" } },
+        ],
+      },
+    ],
+  },
+  home: {
+    title: "Acas\u0103",
+    description: "Bine a\u021Bi venit la Nexus Digital - Construim viitorul experien\u021Belor digitale",
+    body: [
+      {
+        _uid: uid(),
+        component: "hero",
+        headline: "Construie\u0219te Ceva Extraordinar",
+        subheadline: "Ajut\u0103m companiile ambi\u021Bioase s\u0103 creeze experien\u021Be digitale care \u00EEncânt\u0103 utilizatorii \u0219i stimuleaz\u0103 cre\u0219terea. De la strategie la lansare, suntem partenerul t\u0103u \u00EEn inova\u021Bie.",
+        size: "large",
+        background_image: { id: null, alt: "", name: "", focus: "", title: "", filename: "", copyright: "", fieldtype: "asset" },
+        buttons: [
+          { _uid: uid(), component: "hero_button", label: "\u00CEncepe Acum", variant: "primary", link: { id: "", url: "/contact", linktype: "url", fieldtype: "multilink", cached_url: "/contact" } },
+          { _uid: uid(), component: "hero_button", label: "Afl\u0103 Mai Multe", variant: "secondary", link: { id: "", url: "/services", linktype: "url", fieldtype: "multilink", cached_url: "/services" } },
+        ],
+      },
+      {
+        _uid: uid(),
+        component: "logo_cloud",
+        title: "De \u00EEncredere pentru companii inovatoare din \u00EEntreaga lume",
+      },
+      {
+        _uid: uid(),
+        component: "feature_grid",
+        title: "De Ce Ne Aleg Echipele",
+        subtitle: "Combin\u0103m expertiza tehnic\u0103 profund\u0103 cu un focus neobi\u0219nuit pe experien\u021Ba utilizatorului.",
+        features: [
+          { _uid: uid(), component: "feature_card", icon: "rocket", title: "Rapid ca Fulgerul", description: "Site-urile noastre se \u00EEncarc\u0103 \u00EEn mai pu\u021Bin de o secund\u0103, asigur\u00E2nd c\u0103 vizitatorii r\u0103m\u00E2n implica\u021Bi \u0219i ratele de conversie cresc." },
+          { _uid: uid(), component: "feature_card", icon: "shield", title: "Securitate Enterprise", description: "Practici de securitate de nivel bancar integrate \u00EEn fiecare strat, astfel \u00EEnc\u00E2t datele tale \u0219i ale clien\u021Bilor t\u0103i s\u0103 fie \u00EEn siguran\u021B\u0103." },
+          { _uid: uid(), component: "feature_card", icon: "chart", title: "Analize Bazate pe Date", description: "Analitice \u0219i rapoarte integrate care te ajut\u0103 s\u0103 iei decizii informate \u0219i s\u0103 optimizezi prezen\u021Ba digital\u0103." },
+          { _uid: uid(), component: "feature_card", icon: "globe", title: "Scalare Global\u0103", description: "Implementare pe re\u021Bele edge la nivel mondial. Site-ul t\u0103u func\u021Bioneaz\u0103 excelent indiferent dac\u0103 utilizatorii sunt locali sau globali." },
+          { _uid: uid(), component: "feature_card", icon: "code", title: "Tehnologie Modern\u0103", description: "Folosim tehnologie de ultim\u0103 genera\u021Bie \u2014 React, Next.js \u0219i CMS headless \u2014 pentru solu\u021Bii u\u0219or de \u00EEntre\u021Binut \u0219i pregătite pentru viitor." },
+          { _uid: uid(), component: "feature_card", icon: "users", title: "Suport Dedicat", description: "Echipa noastr\u0103 este disponibil\u0103 c\u00E2nd ai nevoie de noi. De la onboarding la optimizare continu\u0103, suntem al\u0103turi de tine." },
+        ],
+      },
+      {
+        _uid: uid(),
+        component: "text_with_image",
+        title: "O Abordare Modern\u0103 a Digitalului",
+        content: richtext("Credem c\u0103 produsele digitale extraordinare \u00EEncep cu \u00EEn\u021Belegerea utilizatorilor. Echipa noastr\u0103 combin\u0103 g\u00E2ndirea de design cu excelen\u021Ba tehnic\u0103 pentru a crea site-uri web care nu arat\u0103 doar frumos \u2014 ci performeaz\u0103. Fiecare proiect pe care \u00EEl prelu\u0103m este o oportunitate de a dep\u0103\u0219i limitele \u0219i de a livra rezultate care dep\u0103\u0219esc a\u0219tept\u0103rile."),
+      },
+      {
+        _uid: uid(),
+        component: "testimonials",
+        title: "Ce Spun Clien\u021Bii No\u0219tri",
+        items: [
+          { _uid: uid(), component: "testimonial_card", quote: "Colaborarea cu Nexus Digital ne-a transformat prezen\u021Ba online. Rata noastr\u0103 de conversie a crescut cu 40% \u00EEn prima lun\u0103 de la lansarea noului site.", author_name: "Sarah Chen", author_role: "VP Marketing, TechCorp" },
+          { _uid: uid(), component: "testimonial_card", quote: "Aten\u021Bia la detalii \u0219i expertiza tehnic\u0103 a echipei este de ne\u00EEn\u021Beles. Au livrat o solu\u021Bie care se scaleaz\u0103 cu cre\u0219terea noastr\u0103 \u0219i \u00EEncânt\u0103 utilizatorii.", author_name: "Marcus Rodriguez", author_role: "CTO, FutureScale" },
+          { _uid: uid(), component: "testimonial_card", quote: "Profesioni\u0219ti, receptivi \u0219i incredibil de talenta\u021Bi. Nexus Digital este mai mult dec\u00E2t un furnizor \u2014 sunt un partener adev\u0103rat \u00EEn transformarea noastr\u0103 digital\u0103.", author_name: "Emily Watson", author_role: "CEO, Innovate Inc" },
+        ],
+      },
+      {
+        _uid: uid(),
+        component: "call_to_action",
+        headline: "Gata S\u0103-\u021Bi Transformi Prezen\u021Ba Digital\u0103?",
+        body: "Hai s\u0103 discut\u0103m cum te putem ajuta s\u0103 construie\u0219ti ceva extraordinar. Contacteaz\u0103-ne pentru o consulta\u021Bie gratuit\u0103.",
+        button_label: "\u00CEncepe o Conversa\u021Bie",
+      },
+    ],
+  },
+  services: {
+    title: "Servicii",
+    description: "Exploreaz\u0103 gama noastr\u0103 complet\u0103 de servicii digitale",
+    body: [
+      {
+        _uid: uid(),
+        component: "hero",
+        headline: "Serviciile Noastre",
+        subheadline: "Solu\u021Bii digitale complete adaptate nevoilor afacerii tale. De la strategie la execu\u021Bie, livr\u0103m rezultate.",
+        size: "medium",
+        background_image: { id: null, alt: "", name: "", focus: "", title: "", filename: "", copyright: "", fieldtype: "asset" },
+        buttons: [],
+      },
+      {
+        _uid: uid(),
+        component: "feature_grid",
+        title: "Ce Oferim",
+        subtitle: "Servicii digitale end-to-end concepute pentru a accelera afacerea ta.",
+        features: [
+          { _uid: uid(), component: "feature_card", icon: "code", title: "Dezvoltare Web", description: "Site-uri web \u0219i aplica\u021Bii web personalizate construite cu framework-uri moderne. Rapide, accesibile \u0219i frumos realizate." },
+          { _uid: uid(), component: "feature_card", icon: "globe", title: "Strategie Digital\u0103", description: "Strategii bazate pe date care aliniaz\u0103 prezen\u021Ba ta digital\u0103 cu obiectivele de afaceri \u0219i publicul \u021Bint\u0103." },
+          { _uid: uid(), component: "feature_card", icon: "lightning", title: "Optimizare Performan\u021B\u0103", description: "Accelereaz\u0103 site-ul existent cu optimizarea Core Web Vitals, strategii de caching \u0219i \u00EEmp\u0103r\u021Birea codului." },
+          { _uid: uid(), component: "feature_card", icon: "cloud", title: "Infrastructur\u0103 Cloud", description: "Arhitectur\u0103 cloud scalabil\u0103 \u0219i fiabil\u0103 care cre\u0219te odat\u0103 cu afacerea ta. Expertiz\u0103 AWS, Azure \u0219i GCP." },
+          { _uid: uid(), component: "feature_card", icon: "lock", title: "Audituri de Securitate", description: "Evalu\u0103ri complete de securitate \u0219i teste de penetrare pentru a proteja activele digitale \u0219i datele utilizatorilor." },
+          { _uid: uid(), component: "feature_card", icon: "chart", title: "Analitic\u0103 \u0219i Raportare", description: "Dashboarduri personalizate \u0219i solu\u021Bii de raportare care \u00EE\u021Bi ofer\u0103 vizibilitate \u00EEn timp real asupra performan\u021Bei digitale." },
+        ],
+      },
+      {
+        _uid: uid(),
+        component: "pricing_table",
+        title: "Pre\u021Buri Simple \u0219i Transparente",
+        subtitle: "Alege planul potrivit nevoilor tale. Toate planurile includ o perioad\u0103 de prob\u0103 gratuit\u0103 de 14 zile.",
+        plans: [
+          {
+            _uid: uid(),
+            component: "pricing_card",
+            plan_name: "Starter",
+            price: "$999",
+            period: "lun\u0103",
+            features: "5 pagini\nDesign responsiv\nSEO de baz\u0103\nFormular de contact\nRaport lunar de analitic\u0103",
+            button_label: "\u00CEncepe Acum",
+            is_popular: false,
+            popular_badge_text: "",
+          },
+          {
+            _uid: uid(),
+            component: "pricing_card",
+            plan_name: "Profesional",
+            price: "$2,499",
+            period: "lun\u0103",
+            features: "15 pagini\nSistem de design personalizat\nSEO avansat\nIntegrare CMS\nPreg\u0103tit pentru e-commerce\nAnalitic\u0103 s\u0103pt\u0103m\u00E2nal\u0103\nSuport prioritar",
+            button_label: "\u00CEncepe Acum",
+            is_popular: true,
+            popular_badge_text: "Cel Mai Popular",
+          },
+          {
+            _uid: uid(),
+            component: "pricing_card",
+            plan_name: "Enterprise",
+            price: "Personalizat",
+            period: "proiect",
+            features: "Pagini nelimitate\nDezvoltare complet personalizat\u0103\nIntegr\u0103ri API\nSuport multi-limb\u0103\nManager de cont dedicat\nGaran\u021Bie SLA\nSuport 24/7",
+            button_label: "Contacteaz\u0103 V\u00E2nz\u0103rile",
+            is_popular: false,
+            popular_badge_text: "",
+          },
+        ],
+      },
+      {
+        _uid: uid(),
+        component: "call_to_action",
+        headline: "Nu E\u0219ti Sigur Care Plan Este Potrivit?",
+        body: "Echipa noastr\u0103 te va ajuta s\u0103 g\u0103se\u0219ti solu\u021Bia perfect\u0103 pentru nevoile \u0219i bugetul t\u0103u.",
+        button_label: "Programeaz\u0103 o Consulta\u021Bie",
+      },
+    ],
+  },
+  about: {
+    title: "Despre Noi",
+    description: "Afl\u0103 despre echipa, misiunea \u0219i valorile noastre",
+    body: [
+      {
+        _uid: uid(),
+        component: "hero",
+        headline: "Despre Nexus Digital",
+        subheadline: "Suntem o echip\u0103 de designeri, dezvoltatori \u0219i strategi pasiona\u021Bi de construirea unor experien\u021Be digitale remarcabile.",
+        size: "medium",
+        background_image: { id: null, alt: "", name: "", focus: "", title: "", filename: "", copyright: "", fieldtype: "asset" },
+        buttons: [],
+      },
+      {
+        _uid: uid(),
+        component: "text_with_image",
+        title: "Povestea Noastr\u0103",
+        content: richtext("Fondat \u00EEn 2018, Nexus Digital a \u00EEnceput cu o convingere simpl\u0103: fiecare afacere merit\u0103 o prezen\u021B\u0103 digital\u0103 de clas\u0103 mondial\u0103. Ceea ce a \u00EEnceput ca un studio de dou\u0103 persoane a crescut \u00EEntr-o agen\u021Bie digital\u0103 complet\u0103 care deserve\u0219te clien\u021Bi din \u00EEntreaga lume. Am ajutat peste 200 de companii s\u0103-\u0219i transforme prezen\u021Ba online, gener\u00E2nd rezultate m\u0103surabile \u0219i parteneriate durabile."),
+      },
+      {
+        _uid: uid(),
+        component: "feature_grid",
+        title: "Valorile Noastre",
+        subtitle: "Aceste principii ghideaz\u0103 tot ceea ce facem.",
+        features: [
+          { _uid: uid(), component: "feature_card", icon: "heart", title: "Utilizatorul Pe Primul Loc", description: "Fiecare decizie pe care o lu\u0103m \u00EEncepe cu utilizatorul final. Design\u0103m pentru oameni, nu doar pentru pixeli." },
+          { _uid: uid(), component: "feature_card", icon: "star", title: "Excelen\u021B\u0103", description: "Ne \u021Binem la cele mai \u00EEnalte standarde de calitate \u00EEn design, cod \u0219i comunicare." },
+          { _uid: uid(), component: "feature_card", icon: "lightning", title: "Inova\u021Bie", description: "R\u0103m\u00E2nem \u00EEn fruntea tehnologiei, explor\u00E2nd mereu modalit\u0103\u021Bi mai bune de a rezolva probleme." },
+          { _uid: uid(), component: "feature_card", icon: "users", title: "Colaborare", description: "Lucr\u0103m ca o extensie a echipei tale, promov\u00E2nd comunicarea deschis\u0103 \u0219i responsabilitatea comun\u0103." },
+          { _uid: uid(), component: "feature_card", icon: "shield", title: "Integritate", description: "Sfaturi oneste, pre\u021Buri transparente \u0219i f\u0103r\u0103 surprize. Construim \u00EEncredere prin consecven\u021B\u0103." },
+          { _uid: uid(), component: "feature_card", icon: "globe", title: "Impact", description: "M\u0103sur\u0103m succesul prin rezultatele tangibile pe care le livr\u0103m clien\u021Bilor no\u0219tri \u0219i utilizatorilor lor." },
+        ],
+      },
+      {
+        _uid: uid(),
+        component: "testimonials",
+        title: "De \u00CEncredere pentru Lideri din Industrie",
+        items: [
+          { _uid: uid(), component: "testimonial_card", quote: "Nexus Digital nu ne-a construit doar un site web \u2014 ne-au ajutat s\u0103 reg\u00E2ndim \u00EEntreaga strategie digital\u0103. Rezultatele vorbesc de la sine.", author_name: "David Park", author_role: "Fondator, DataFlow" },
+          { _uid: uid(), component: "testimonial_card", quote: "Cea mai colaborativ\u0103 agen\u021Bie cu care am lucrat vreodat\u0103. Au devenit cu adev\u0103rat parte din echipa noastr\u0103 \u0219i au livrat dincolo de a\u0219tept\u0103rile noastre.", author_name: "Lisa Thompson", author_role: "COO, CloudNine" },
+          { _uid: uid(), component: "testimonial_card", quote: "De la concept la lansare, echipa Nexus a fost excep\u021Bional\u0103. \u0218i-au luat timp s\u0103 \u00EEn\u021Beleag\u0103 viziunea noastr\u0103 \u0219i au adus-o la via\u021B\u0103 impecabil.", author_name: "James Mitchell", author_role: "Director, GreenLeaf" },
+        ],
+      },
+    ],
+  },
+  contact: {
+    title: "Contact",
+    description: "Ia leg\u0103tura cu echipa noastr\u0103",
+    body: [
+      {
+        _uid: uid(),
+        component: "hero",
+        headline: "Contacteaz\u0103-ne",
+        subheadline: "Ai un proiect \u00EEn minte? Ne-ar pl\u0103cea s\u0103 auzim despre el. Completeaz\u0103 formularul de mai jos \u0219i \u00EE\u021Bi vom r\u0103spunde \u00EEn 24 de ore.",
+        size: "small",
+        background_image: { id: null, alt: "", name: "", focus: "", title: "", filename: "", copyright: "", fieldtype: "asset" },
+        buttons: [],
+      },
+      {
+        _uid: uid(),
+        component: "contact_form",
+        title: "Trimite-ne un Mesaj",
+        subtitle: "Completeaz\u0103 formularul de mai jos \u0219i echipa noastr\u0103 va r\u0103spunde \u00EEn termen de o zi lucr\u0103toare.",
+        name_label: "Nume",
+        name_placeholder: "Numele t\u0103u",
+        email_label: "Email",
+        email_placeholder: "tu@exemplu.com",
+        message_label: "Mesaj",
+        message_placeholder: "Cum te putem ajuta?",
+        button_label: "Trimite Mesajul",
+        success_title: "Mul\u021Bumim!",
+        success_message: "Mesajul t\u0103u a fost primit. \u00CE\u021Bi vom r\u0103spunde \u00EEn termen de o zi lucr\u0103toare.",
+      },
+      {
+        _uid: uid(),
+        component: "faq",
+        title: "\u00CEntreb\u0103ri Frecvente",
+        subtitle: "Nu g\u0103se\u0219ti ce cau\u021Bi? Contacteaz\u0103-ne direct.",
+        items: [
+          { _uid: uid(), component: "faq_item", question: "C\u00E2t dureaz\u0103 un proiect tipic?", answer: richtext("Majoritatea proiectelor dureaz\u0103 \u00EEntre 6-12 s\u0103pt\u0103m\u00E2ni de la \u00EEncepere p\u00E2n\u0103 la lansare, \u00EEn func\u021Bie de complexitate. Vom oferi un calendar detaliat \u00EEn timpul consulta\u021Biei ini\u021Biale.") },
+          { _uid: uid(), component: "faq_item", question: "Lucra\u021Bi cu afaceri mici?", answer: richtext("Absolut! Lucr\u0103m cu afaceri de toate dimensiunile. Planul nostru Starter este conceput special pentru afacerile mici care doresc s\u0103 stabileasc\u0103 o prezen\u021B\u0103 online puternic\u0103.") },
+          { _uid: uid(), component: "faq_item", question: "Ce tehnologii folosi\u021Bi?", answer: richtext("Lucr\u0103m \u00EEn principal cu React, Next.js \u0219i platforme CMS headless precum Storyblok. Pentru nevoile de backend, folosim Node.js, PostgreSQL \u0219i servicii cloud precum AWS \u0219i Vercel.") },
+          { _uid: uid(), component: "faq_item", question: "Oferi\u021Bi suport continuu?", answer: richtext("Da! Toate planurile noastre includ suport \u0219i \u00EEntre\u021Binere continu\u0103. Oferim \u0219i pachete de suport dedicat pentru clien\u021Bii care au nevoie de asisten\u021B\u0103 prioritar\u0103 \u0219i actualiz\u0103ri regulate.") },
+          { _uid: uid(), component: "faq_item", question: "Pute\u021Bi ajuta cu un site web existent?", answer: richtext("Desigur. Oferim audituri de performan\u021B\u0103, redesign-uri \u0219i \u00EEmbun\u0103t\u0103\u021Biri incrementale pentru site-urile existente. Vom evalua configura\u021Bia actual\u0103 \u0219i vom recomanda cea mai bun\u0103 cale de urmat.") },
+        ],
+      },
+    ],
+  },
+  blog: {
+    title: "Blog",
+    description: "Perspective, tutoriale \u0219i nout\u0103\u021Bi de la echipa Nexus Digital",
+    body: [
+      {
+        _uid: uid(),
+        component: "hero",
+        headline: "Blogul Nostru",
+        subheadline: "Perspective, tutoriale \u0219i nout\u0103\u021Bi din industrie de la echipa noastr\u0103 de exper\u021Bi digitali.",
+        size: "small",
+        background_image: { id: null, alt: "", name: "", focus: "", title: "", filename: "", copyright: "", fieldtype: "asset" },
+        buttons: [],
+      },
+      {
+        _uid: uid(),
+        component: "feature_grid",
+        title: "Ultimele Articole",
+        subtitle: "",
+        features: [
+          { _uid: uid(), component: "feature_card", icon: "rocket", title: "Viitorul CMS Headless", description: "Exploreaz\u0103 de ce arhitectura CMS headless devine standardul pentru dezvoltarea web modern\u0103 \u0219i cum beneficiaz\u0103 echipa ta." },
+          { _uid: uid(), component: "feature_card", icon: "lightning", title: "Optimizarea Core Web Vitals", description: "Un ghid practic pentru m\u0103surarea \u0219i \u00EEmbun\u0103t\u0103\u021Birea Core Web Vitals pentru o experien\u021B\u0103 de utilizare mai bun\u0103 \u0219i clasament SEO superior." },
+          { _uid: uid(), component: "feature_card", icon: "code", title: "Next.js 15: Ce Este Nou", description: "O analiz\u0103 aprofundat\u0103 a celor mai recente func\u021Bionalit\u0103\u021Bi Next.js 15, inclusiv Server Components, rutare \u00EEmbun\u0103t\u0103\u021Bit\u0103 \u0219i c\u00E2\u0219tiguri de performan\u021B\u0103." },
+          { _uid: uid(), component: "feature_card", icon: "shield", title: "Bune Practici de Securitate Web", description: "Practici esen\u021Biale de securitate pe care fiecare dezvoltator web ar trebui s\u0103 le implementeze pentru a proteja datele utilizatorilor." },
+          { _uid: uid(), component: "feature_card", icon: "chart", title: "Decizii de Design Bazate pe Date", description: "Cum s\u0103 folose\u0219ti analitica \u0219i cercetarea utilizatorilor pentru a lua decizii de design care \u00EEmbun\u0103t\u0103\u021Besc engagement-ul \u0219i ratele de conversie." },
+          { _uid: uid(), component: "feature_card", icon: "globe", title: "Globalizare: i18n \u00EEn Next.js", description: "Un ghid complet pentru implementarea interna\u021Bionaliz\u0103rii \u00EEn aplica\u021Bia ta Next.js pentru o audien\u021B\u0103 global\u0103." },
+        ],
+      },
+    ],
+  },
+};
+
 // ---------- Main ----------
 
 async function main() {
   console.log("=== Storyblok Setup Script ===\n");
 
+  // Step 0: Configure i18n on the Storyblok space
+  console.log("[0/4] Configuring i18n (English + Romanian)...");
+  try {
+    await apiSafe("", "PUT", {
+      space: {
+        languages: [
+          { code: "ro", name: "Romanian" },
+        ],
+      },
+    });
+    console.log("  \u2713 i18n configured: English (default) + Romanian\n");
+  } catch (err: unknown) {
+    const message = err instanceof Error ? err.message : String(err);
+    console.log(`  Warning: Could not configure i18n: ${message}`);
+    console.log("  This may already be configured. Continuing...\n");
+  }
+  await sleep(300);
+
   // Step 1: Delete existing default "page" component if it exists with a different schema
-  console.log("[1/3] Fetching existing components...");
+  console.log("[1/4] Fetching existing components...");
   const { components: existing } = await apiSafe("/components");
   const existingMap = new Map<string, number>();
   for (const comp of existing) {
     existingMap.set(comp.name, comp.id);
   }
 
-  // Step 2: Create/update components
-  console.log("[2/3] Creating components...\n");
+  // Step 2: Create/update components (with translatable fields)
+  console.log("[2/4] Creating components with translatable fields...\n");
   for (const comp of components) {
     const existingId = existingMap.get(comp.name);
 
@@ -889,8 +1212,8 @@ async function main() {
     await sleep(200); // Be gentle with rate limits
   }
 
-  // Step 3: Create stories
-  console.log("\n[3/3] Creating seed content...\n");
+  // Step 3: Create stories (English default content)
+  console.log("\n[3/4] Creating seed content (English)...\n");
 
   // First check for existing stories
   const { stories: existingStories } = await apiSafe("/stories");
@@ -920,11 +1243,51 @@ async function main() {
     await sleep(300);
   }
 
-  console.log("\n✅ Setup complete! Your Storyblok space is ready.");
+  // Step 4: Seed Romanian translations
+  console.log("\n[4/4] Seeding Romanian translations...\n");
+
+  // Re-fetch stories to get IDs (in case they were just created)
+  const { stories: allStories } = await apiSafe("/stories");
+  const storyIdMap = new Map<string, number>();
+  for (const s of allStories) {
+    storyIdMap.set(s.slug, s.id);
+  }
+
+  for (const [slug, roContent] of Object.entries(romanianTranslations)) {
+    const storyId = storyIdMap.get(slug);
+    if (!storyId) {
+      console.log(`  Skipping ${slug}: story not found`);
+      continue;
+    }
+
+    // Fetch the full story to get its current content
+    const { story: fullStory } = await apiSafe(`/stories/${storyId}`);
+    await sleep(200);
+
+    // Merge Romanian translations into the story content
+    const translatedContent = { ...fullStory.content, ...roContent };
+
+    try {
+      await apiSafe(`/stories/${storyId}`, "PUT", {
+        story: {
+          content: translatedContent,
+          lang: "ro",
+        },
+        publish: 1,
+      });
+      console.log(`  \u2713 Romanian: ${slug}`);
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : String(err);
+      console.log(`  \u2717 Failed ${slug}: ${message}`);
+    }
+    await sleep(300);
+  }
+
+  console.log("\n\u2705 Setup complete! Your Storyblok space is ready with English + Romanian.");
   console.log("   Open the Storyblok editor to see your content.\n");
 }
 
 main().catch((err) => {
-  console.error("\n❌ Setup failed:", err.message);
+  console.error("\n\u274C Setup failed:", err.message);
   process.exit(1);
 });

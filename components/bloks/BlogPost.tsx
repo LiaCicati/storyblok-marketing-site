@@ -1,9 +1,19 @@
-import { storyblokEditable } from "@storyblok/react/rsc";
+"use client";
+
+import { storyblokEditable } from "@storyblok/react";
 import { render } from "storyblok-rich-text-react-renderer";
 import Image from "next/image";
 import type { BlogPostBlok } from "@/lib/types";
+import { useLocale } from "@/lib/locale-context";
+
+const localeMap: Record<string, string> = {
+  en: "en-US",
+  ro: "ro-RO",
+};
 
 export default function BlogPost({ blok }: { blok: BlogPostBlok }) {
+  const locale = useLocale();
+
   return (
     <article {...storyblokEditable(blok)} className="py-16 md:py-24 bg-white">
       <div className="mx-auto max-w-3xl px-4 sm:px-6 lg:px-8">
@@ -26,7 +36,7 @@ export default function BlogPost({ blok }: { blok: BlogPostBlok }) {
           {blok.author && <span>By {blok.author}</span>}
           {blok.published_date && (
             <time dateTime={blok.published_date}>
-              {new Date(blok.published_date).toLocaleDateString("en-US", {
+              {new Date(blok.published_date).toLocaleDateString(localeMap[locale] || "en-US", {
                 year: "numeric",
                 month: "long",
                 day: "numeric",

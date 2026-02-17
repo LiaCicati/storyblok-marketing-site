@@ -1,14 +1,23 @@
-import { storyblokEditable } from "@storyblok/react/rsc";
+"use client";
+
+import { storyblokEditable } from "@storyblok/react";
 import Image from "next/image";
 import Link from "next/link";
 import type { HeroBlok, HeroButtonBlok } from "@/lib/types";
+import { useLocale } from "@/lib/locale-context";
 
-function resolveLink(link: HeroButtonBlok["link"]): string {
-  if (!link) return "/";
+function resolveLink(link: HeroButtonBlok["link"], locale: string): string {
+  if (!link) return `/${locale}`;
+  let path: string;
   if (link.linktype === "story") {
-    return `/${link.cached_url}`.replace(/\/+$/, "") || "/";
+    path = `/${link.cached_url}`.replace(/\/+$/, "") || "/";
+  } else {
+    path = link.cached_url || link.url || "/";
   }
-  return link.cached_url || link.url || "/";
+  if (path.startsWith("/") && !path.startsWith("http")) {
+    return `/${locale}${path === "/" ? "" : path}`;
+  }
+  return path;
 }
 
 const sizeClasses = {
@@ -18,6 +27,7 @@ const sizeClasses = {
 };
 
 export default function Hero({ blok }: { blok: HeroBlok }) {
+  const locale = useLocale();
   const size = blok.size || "large";
 
   return (
@@ -49,7 +59,7 @@ export default function Hero({ blok }: { blok: HeroBlok }) {
             {blok.buttons.map((btn) => (
               <Link
                 key={btn._uid}
-                href={resolveLink(btn.link)}
+                href={resolveLink(btn.link, locale)}
                 className={
                   btn.variant === "secondary"
                     ? "rounded-lg border-2 border-white px-6 py-3 text-sm font-semibold text-white hover:bg-white hover:text-gray-900 transition-colors"

@@ -2,14 +2,50 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import type { NavLinkBlok, LinkBlok } from "@/lib/types";
+import { i18n, localeNames } from "@/lib/i18n";
 
-function resolveLink(link: NavLinkBlok["link"] | LinkBlok | undefined): string {
-  if (!link) return "/";
+function resolveLink(link: NavLinkBlok["link"] | LinkBlok | undefined, locale: string): string {
+  if (!link) return `/${locale}`;
+  let path: string;
   if (link.linktype === "story") {
-    return `/${link.cached_url}`.replace(/\/+$/, "") || "/";
+    path = `/${link.cached_url}`.replace(/\/+$/, "") || "/";
+  } else {
+    path = link.cached_url || link.url || "/";
   }
-  return link.cached_url || link.url || "/";
+  // Only prefix internal links
+  if (path.startsWith("/") && !path.startsWith("http")) {
+    return `/${locale}${path === "/" ? "" : path}`;
+  }
+  return path;
+}
+
+function LanguageSwitcher({ locale }: { locale: string }) {
+  const pathname = usePathname();
+
+  // Strip current locale prefix from pathname
+  const pathnameWithoutLocale = pathname.replace(new RegExp(`^/${locale}`), "") || "/";
+
+  return (
+    <div className="flex items-center gap-1 text-sm">
+      {i18n.locales.map((loc) => (
+        <Link
+          key={loc}
+          href={`/${loc}${pathnameWithoutLocale === "/" ? "" : pathnameWithoutLocale}`}
+          className={`px-2 py-1 rounded transition-colors ${
+            loc === locale
+              ? "bg-primary-100 text-primary-700 font-semibold"
+              : "text-gray-500 hover:text-gray-700"
+          }`}
+          aria-label={`Switch to ${loc === "en" ? "English" : "Română"}`}
+          aria-current={loc === locale ? "true" : undefined}
+        >
+          {localeNames[loc]}
+        </Link>
+      ))}
+    </div>
+  );
 }
 
 interface HeaderProps {
@@ -17,16 +53,17 @@ interface HeaderProps {
   navLinks: NavLinkBlok[];
   ctaLabel?: string;
   ctaLink?: LinkBlok;
+  locale: string;
 }
 
-export default function Header({ siteName, navLinks, ctaLabel, ctaLink }: HeaderProps) {
+export default function Header({ siteName, navLinks, ctaLabel, ctaLink, locale }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
     <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
-          <Link href="/" className="text-xl font-bold text-primary-600">
+          <Link href={`/${locale}`} className="text-xl font-bold text-primary-600">
             {siteName || "Storyblok Site"}
           </Link>
 
@@ -35,15 +72,16 @@ export default function Header({ siteName, navLinks, ctaLabel, ctaLink }: Header
             {navLinks?.map((item) => (
               <Link
                 key={item._uid}
-                href={resolveLink(item.link)}
+                href={resolveLink(item.link, locale)}
                 className="text-sm font-medium text-gray-700 hover:text-primary-600 transition-colors"
               >
                 {item.label}
               </Link>
             ))}
+            <LanguageSwitcher locale={locale} />
             {ctaLabel && (
               <Link
-                href={resolveLink(ctaLink)}
+                href={resolveLink(ctaLink, locale)}
                 className="rounded-lg bg-primary-600 px-4 py-2 text-sm font-semibold text-white hover:bg-primary-500 transition-colors"
               >
                 {ctaLabel}
@@ -89,7 +127,7 @@ export default function Header({ siteName, navLinks, ctaLabel, ctaLink }: Header
           {navLinks?.map((item) => (
             <Link
               key={item._uid}
-              href={resolveLink(item.link)}
+              href={resolveLink(item.link, locale)}
               className="block rounded-lg px-3 py-2 text-base font-medium text-gray-700 hover:bg-gray-50 hover:text-primary-600 transition-colors"
               onClick={() => setMobileOpen(false)}
             >
@@ -98,13 +136,16 @@ export default function Header({ siteName, navLinks, ctaLabel, ctaLink }: Header
           ))}
           {ctaLabel && (
             <Link
-              href={resolveLink(ctaLink)}
+              href={resolveLink(ctaLink, locale)}
               className="block rounded-lg bg-primary-600 px-3 py-2 text-center text-base font-semibold text-white hover:bg-primary-500 transition-colors"
               onClick={() => setMobileOpen(false)}
             >
               {ctaLabel}
             </Link>
           )}
+          <div className="flex justify-center pt-2">
+            <LanguageSwitcher locale={locale} />
+          </div>
         </nav>
       </div>
     </header>
