@@ -1,7 +1,5 @@
 import type { ReactNode } from "react";
 import Link from "next/link";
-import { storyblokEditable } from "@storyblok/react/rsc";
-import type { SbBlokData } from "@storyblok/react/rsc";
 import type { FooterColumnBlok, SocialLinkBlok, NavLinkBlok } from "@/lib/types";
 
 function resolveLink(link: NavLinkBlok["link"]): string {
@@ -36,12 +34,11 @@ interface FooterProps {
   columns: FooterColumnBlok[];
   socialLinks: SocialLinkBlok[];
   copyrightText: string;
-  blok?: SbBlokData;
 }
 
-export default function Footer({ siteName, tagline, columns, socialLinks, copyrightText, blok }: FooterProps) {
+export default function Footer({ siteName, tagline, columns, socialLinks, copyrightText }: FooterProps) {
   return (
-    <footer {...(blok ? storyblokEditable(blok) : {})} className="bg-gray-900 text-gray-300" role="contentinfo">
+    <footer className="bg-gray-900 text-gray-300" role="contentinfo">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8 py-12 lg:py-16">
         <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
           {/* Brand column */}

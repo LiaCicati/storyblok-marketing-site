@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import Link from "next/link";
-import { storyblokEditable } from "@storyblok/react";
-import type { SbBlokData } from "@storyblok/react";
 import type { NavLinkBlok, LinkBlok } from "@/lib/types";
 
 function resolveLink(link: NavLinkBlok["link"] | LinkBlok | undefined): string {
@@ -19,14 +17,13 @@ interface HeaderProps {
   navLinks: NavLinkBlok[];
   ctaLabel?: string;
   ctaLink?: LinkBlok;
-  blok?: SbBlokData;
 }
 
-export default function Header({ siteName, navLinks, ctaLabel, ctaLink, blok }: HeaderProps) {
+export default function Header({ siteName, navLinks, ctaLabel, ctaLink }: HeaderProps) {
   const [mobileOpen, setMobileOpen] = useState(false);
 
   return (
-    <header {...(blok ? storyblokEditable(blok) : {})} className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
+    <header className="sticky top-0 z-50 bg-white/95 backdrop-blur-sm border-b border-gray-100">
       <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-8">
         <div className="flex h-16 items-center justify-between">
           <Link href="/" className="text-xl font-bold text-primary-600">
