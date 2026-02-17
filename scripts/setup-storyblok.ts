@@ -844,9 +844,14 @@ const blogContent = {
   ],
 };
 
-const stories = [
+// Stories that live at the root level
+const rootStories = [
   { name: "Config", slug: "config", content: configContent },
   { name: "Home", slug: "home", content: homeContent },
+];
+
+// Stories that live inside the "pages" folder for clear hierarchy
+const pageStories = [
   { name: "Services", slug: "services", content: servicesContent },
   { name: "About", slug: "about", content: aboutContent },
   { name: "Contact", slug: "contact", content: contactContent },
@@ -1256,17 +1261,69 @@ async function main() {
     await sleep(200);
   }
 
-  // Step 3: Create stories with English + Romanian inline translations
-  console.log("\n[3/3] Creating seed content (English + Romanian)...\n");
+  // Step 3: Delete old flat stories that will move into folders
+  console.log("\n[3/5] Cleaning up old flat stories...\n");
 
-  const { stories: existingStories } = await apiSafe("/stories");
-  const existingSlugs = new Map<string, number>();
-  for (const s of existingStories) {
-    existingSlugs.set(s.slug, s.id);
+  const { stories: existingStoriesAll } = await apiSafe("/stories");
+  const existingSlugsAll = new Map<string, { id: number; full_slug: string }>();
+  for (const s of existingStoriesAll) {
+    existingSlugsAll.set(s.slug, { id: s.id, full_slug: s.full_slug });
   }
 
-  for (const story of stories) {
-    // Merge Romanian translations inline using __i18n__ro field names
+  // Delete old flat stories that should now live in folders
+  for (const story of pageStories) {
+    const existing = existingSlugsAll.get(story.slug);
+    if (existing && !existing.full_slug.startsWith("pages/")) {
+      console.log(`  Deleting flat story: ${story.name} (/${story.slug}) → will recreate in pages/`);
+      await apiSafe(`/stories/${existing.id}`, "DELETE");
+      await sleep(300);
+    }
+  }
+
+  // Step 4: Create "pages" folder for site hierarchy
+  console.log("\n[4/5] Creating folder hierarchy...\n");
+
+  // Check if pages folder already exists
+  let pagesFolderId: number | null = null;
+  try {
+    const { stories: allStories } = await apiSafe("/stories?is_folder=1");
+    for (const s of allStories) {
+      if (s.slug === "pages" && s.is_folder) {
+        pagesFolderId = s.id;
+        console.log(`  📁 pages/ folder already exists (id: ${pagesFolderId})`);
+      }
+    }
+  } catch {
+    // No folders yet
+  }
+
+  if (!pagesFolderId) {
+    console.log("  Creating 📁 pages/ folder...");
+    const folderRes = await apiSafe("/stories", "POST", {
+      story: {
+        name: "Pages",
+        slug: "pages",
+        is_folder: true,
+        default_root: "page",
+      },
+    });
+    pagesFolderId = folderRes.story.id;
+    console.log(`  ✓ Created pages/ folder (id: ${pagesFolderId})`);
+    await sleep(300);
+  }
+
+  // Step 5: Create stories in their proper locations
+  console.log("\n[5/5] Creating seed content with folder hierarchy (English + Romanian)...\n");
+
+  // Re-fetch stories after deletions
+  const { stories: currentStories } = await apiSafe("/stories");
+  const currentSlugMap = new Map<string, { id: number; full_slug: string }>();
+  for (const s of currentStories) {
+    currentSlugMap.set(s.full_slug, { id: s.id, full_slug: s.full_slug });
+  }
+
+  // Create root-level stories (Config, Home)
+  for (const story of rootStories) {
     const roTranslation = romanianTranslations[story.slug];
     const mergedContent = roTranslation
       ? mergeTranslations(story.content, roTranslation)
@@ -1281,10 +1338,10 @@ async function main() {
       publish: 1,
     };
 
-    const existingId = existingSlugs.get(story.slug);
-    if (existingId) {
+    const existing = currentSlugMap.get(story.slug);
+    if (existing) {
       console.log(`  Updating: ${story.name} (/${story.slug})`);
-      await apiSafe(`/stories/${existingId}`, "PUT", payload);
+      await apiSafe(`/stories/${existing.id}`, "PUT", payload);
     } else {
       console.log(`  Creating: ${story.name} (/${story.slug})`);
       await apiSafe("/stories", "POST", payload);
@@ -1292,7 +1349,47 @@ async function main() {
     await sleep(300);
   }
 
-  console.log("\n\u2705 Setup complete! Your Storyblok space is ready with English + Romanian.");
+  // Create stories inside the pages/ folder
+  for (const story of pageStories) {
+    const roTranslation = romanianTranslations[story.slug];
+    const mergedContent = roTranslation
+      ? mergeTranslations(story.content, roTranslation)
+      : story.content;
+
+    const fullSlug = `pages/${story.slug}`;
+    const payload = {
+      story: {
+        name: story.name,
+        slug: story.slug,
+        parent_id: pagesFolderId,
+        content: mergedContent,
+        // Set path to clean URL so visual editor preview uses /services not /pages/services
+        path: `${story.slug}/`,
+      },
+      publish: 1,
+    };
+
+    const existing = currentSlugMap.get(fullSlug);
+    if (existing) {
+      console.log(`  Updating: ${story.name} (/${fullSlug}) → preview: /${story.slug}/`);
+      await apiSafe(`/stories/${existing.id}`, "PUT", payload);
+    } else {
+      console.log(`  Creating: ${story.name} (/${fullSlug}) [in 📁 pages/] → preview: /${story.slug}/`);
+      await apiSafe("/stories", "POST", payload);
+    }
+    await sleep(300);
+  }
+
+  console.log("\n✅ Setup complete! Your Storyblok space is ready with folder hierarchy + English + Romanian.");
+  console.log("   Content structure:");
+  console.log("   📁 Root");
+  console.log("   ├── Config (settings)");
+  console.log("   ├── Home (homepage)");
+  console.log("   └── 📁 Pages");
+  console.log("       ├── Services");
+  console.log("       ├── About");
+  console.log("       ├── Contact");
+  console.log("       └── Blog");
   console.log("   Open the Storyblok editor to see your content.\n");
 }
 

@@ -54,7 +54,12 @@ export function middleware(request: NextRequest) {
       : null) ||
     i18n.defaultLocale;
 
-  const localizedPath = `/${locale}${pathname === "/" ? "" : pathname}`;
+  // Strip folder prefixes (e.g., /pages/services → /services) so URLs stay clean
+  // This is needed because Storyblok stores stories in folders (pages/services)
+  // but our Next.js routes use clean URLs (/en/services)
+  const cleanPathname = pathname.replace(/^\/pages\//, "/");
+
+  const localizedPath = `/${locale}${cleanPathname === "/" ? "" : cleanPathname}`;
 
   if (isStoryblokEditor) {
     // Rewrite: serve the locale route but keep the URL the same for the bridge
@@ -63,7 +68,14 @@ export function middleware(request: NextRequest) {
     return NextResponse.rewrite(url);
   }
 
-  // Normal visitors: redirect to locale-prefixed URL
+  // Normal visitors: redirect to locale-prefixed URL (also strip folder prefix)
+  if (cleanPathname !== pathname) {
+    // If the URL had a folder prefix, redirect to the clean version
+    return NextResponse.redirect(
+      new URL(localizedPath, request.url)
+    );
+  }
+
   return NextResponse.redirect(
     new URL(localizedPath, request.url)
   );

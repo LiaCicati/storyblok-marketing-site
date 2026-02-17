@@ -1,5 +1,5 @@
 import { StoryblokStory } from "@storyblok/react/rsc";
-import { fetchStory, fetchStories } from "@/lib/storyblok";
+import { fetchStory, fetchStories, toUrlSlug } from "@/lib/storyblok";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
 import { i18n, isValidLocale, toStoryblokLanguage } from "@/lib/i18n";
@@ -20,9 +20,11 @@ export async function generateStaticParams() {
 
   for (const locale of i18n.locales) {
     for (const story of stories) {
+      // Strip folder prefix so URLs stay clean (pages/services → services)
+      const urlSlug = toUrlSlug(story.full_slug);
       params.push({
         locale,
-        slug: story.full_slug === "home" ? [] : story.full_slug.split("/"),
+        slug: urlSlug === "home" ? [] : urlSlug.split("/"),
       });
     }
   }
