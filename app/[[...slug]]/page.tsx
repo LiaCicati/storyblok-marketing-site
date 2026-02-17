@@ -1,4 +1,4 @@
-import { StoryblokComponent, StoryblokStory } from "@storyblok/react/rsc";
+import { StoryblokStory } from "@storyblok/react/rsc";
 import { fetchStory, fetchStories } from "@/lib/storyblok";
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
