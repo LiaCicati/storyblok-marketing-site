@@ -37,6 +37,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               navLinks={config?.header_nav || []}
               ctaLabel={config?.header_cta_label || ""}
               ctaLink={config?.header_cta_link}
+              blok={config || undefined}
             />
             <div className="flex-1">{children}</div>
             <Footer
@@ -45,6 +46,7 @@ export default async function RootLayout({ children }: { children: React.ReactNo
               columns={config?.footer_columns || []}
               socialLinks={config?.social_links || []}
               copyrightText={config?.copyright_text || ""}
+              blok={config || undefined}
             />
           </div>
         </StoryblokProvider>
