@@ -14,7 +14,8 @@ import FAQ from "@/components/bloks/FAQ";
 import RichTextBlock from "@/components/bloks/RichTextBlock";
 import BlogPost from "@/components/bloks/BlogPost";
 
-export const blokComponents: Record<string, unknown> = {
+// eslint-disable-next-line @typescript-eslint/no-explicit-any
+export const blokComponents: Record<string, React.ElementType<any>> = {
   page: Page,
   hero: Hero,
   feature_grid: FeatureGrid,
