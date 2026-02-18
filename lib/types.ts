@@ -23,6 +23,7 @@ export interface AssetBlok {
 export interface NavLinkBlok extends SbBlokData {
   label: string;
   link: LinkBlok;
+  children?: NavLinkBlok[];
 }
 
 export interface ConfigBlok extends SbBlokData {

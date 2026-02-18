@@ -93,7 +93,7 @@ interface ComponentDef {
 }
 
 const components: ComponentDef[] = [
-  // --- Nav Link (nestable) ---
+  // --- Nav Link (nestable, self-referencing for nested navigation) ---
   {
     name: "nav_link",
     display_name: "Nav Link",
@@ -101,6 +101,15 @@ const components: ComponentDef[] = [
     schema: {
       label: { type: "text", pos: 0, display_name: "Label", required: true, translatable: true },
       link: { type: "multilink", pos: 1, display_name: "Link" },
+      children: {
+        type: "bloks",
+        pos: 2,
+        display_name: "Dropdown Items",
+        restrict_type: "groups",
+        restrict_components: true,
+        component_whitelist: ["nav_link"],
+        description: "Add child links to create a dropdown menu",
+      },
     },
   },
   // --- Footer Column (nestable) ---
@@ -523,11 +532,19 @@ const configContent = {
   header_cta_link: { id: "", url: "/contact", linktype: "url", fieldtype: "multilink", cached_url: "/contact" },
   footer_tagline: "Building extraordinary digital experiences for ambitious companies worldwide.",
   header_nav: [
-    { _uid: uid(), component: "nav_link", label: "Home", link: { id: "", url: "/", linktype: "url", fieldtype: "multilink", cached_url: "/" } },
-    { _uid: uid(), component: "nav_link", label: "Services", link: { id: "", url: "/services", linktype: "url", fieldtype: "multilink", cached_url: "/services" } },
-    { _uid: uid(), component: "nav_link", label: "About", link: { id: "", url: "/about", linktype: "url", fieldtype: "multilink", cached_url: "/about" } },
-    { _uid: uid(), component: "nav_link", label: "Blog", link: { id: "", url: "/blog", linktype: "url", fieldtype: "multilink", cached_url: "/blog" } },
-    { _uid: uid(), component: "nav_link", label: "Contact", link: { id: "", url: "/contact", linktype: "url", fieldtype: "multilink", cached_url: "/contact" } },
+    { _uid: uid(), component: "nav_link", label: "Home", link: { id: "", url: "/", linktype: "url", fieldtype: "multilink", cached_url: "/" }, children: [] },
+    {
+      _uid: uid(), component: "nav_link", label: "Services", link: { id: "", url: "/services", linktype: "url", fieldtype: "multilink", cached_url: "/services" },
+      children: [
+        { _uid: uid(), component: "nav_link", label: "Web Development", link: { id: "", url: "/services", linktype: "url", fieldtype: "multilink", cached_url: "/services" }, children: [] },
+        { _uid: uid(), component: "nav_link", label: "Digital Strategy", link: { id: "", url: "/services", linktype: "url", fieldtype: "multilink", cached_url: "/services" }, children: [] },
+        { _uid: uid(), component: "nav_link", label: "Cloud Infrastructure", link: { id: "", url: "/services", linktype: "url", fieldtype: "multilink", cached_url: "/services" }, children: [] },
+        { _uid: uid(), component: "nav_link", label: "Security Audits", link: { id: "", url: "/services", linktype: "url", fieldtype: "multilink", cached_url: "/services" }, children: [] },
+      ],
+    },
+    { _uid: uid(), component: "nav_link", label: "About", link: { id: "", url: "/about", linktype: "url", fieldtype: "multilink", cached_url: "/about" }, children: [] },
+    { _uid: uid(), component: "nav_link", label: "Blog", link: { id: "", url: "/blog", linktype: "url", fieldtype: "multilink", cached_url: "/blog" }, children: [] },
+    { _uid: uid(), component: "nav_link", label: "Contact", link: { id: "", url: "/contact", linktype: "url", fieldtype: "multilink", cached_url: "/contact" }, children: [] },
   ],
   footer_columns: [
     {
@@ -862,11 +879,19 @@ const romanianTranslations: Record<string, any> = {
     footer_tagline: "Construim experien\u021Be digitale extraordinare pentru companii ambi\u021Bioase din \u00EEntreaga lume.",
     copyright_text: "\u00A9 2025 Nexus Digital. Toate drepturile rezervate.",
     header_nav: [
-      { _uid: uid(), component: "nav_link", label: "Acas\u0103", link: { id: "", url: "/", linktype: "url", fieldtype: "multilink", cached_url: "/" } },
-      { _uid: uid(), component: "nav_link", label: "Servicii", link: { id: "", url: "/services", linktype: "url", fieldtype: "multilink", cached_url: "/services" } },
-      { _uid: uid(), component: "nav_link", label: "Despre Noi", link: { id: "", url: "/about", linktype: "url", fieldtype: "multilink", cached_url: "/about" } },
-      { _uid: uid(), component: "nav_link", label: "Blog", link: { id: "", url: "/blog", linktype: "url", fieldtype: "multilink", cached_url: "/blog" } },
-      { _uid: uid(), component: "nav_link", label: "Contact", link: { id: "", url: "/contact", linktype: "url", fieldtype: "multilink", cached_url: "/contact" } },
+      { _uid: uid(), component: "nav_link", label: "Acasă", link: { id: "", url: "/", linktype: "url", fieldtype: "multilink", cached_url: "/" }, children: [] },
+      {
+        _uid: uid(), component: "nav_link", label: "Servicii", link: { id: "", url: "/services", linktype: "url", fieldtype: "multilink", cached_url: "/services" },
+        children: [
+          { _uid: uid(), component: "nav_link", label: "Dezvoltare Web", link: { id: "", url: "/services", linktype: "url", fieldtype: "multilink", cached_url: "/services" }, children: [] },
+          { _uid: uid(), component: "nav_link", label: "Strategie Digitală", link: { id: "", url: "/services", linktype: "url", fieldtype: "multilink", cached_url: "/services" }, children: [] },
+          { _uid: uid(), component: "nav_link", label: "Infrastructură Cloud", link: { id: "", url: "/services", linktype: "url", fieldtype: "multilink", cached_url: "/services" }, children: [] },
+          { _uid: uid(), component: "nav_link", label: "Audituri de Securitate", link: { id: "", url: "/services", linktype: "url", fieldtype: "multilink", cached_url: "/services" }, children: [] },
+        ],
+      },
+      { _uid: uid(), component: "nav_link", label: "Despre Noi", link: { id: "", url: "/about", linktype: "url", fieldtype: "multilink", cached_url: "/about" }, children: [] },
+      { _uid: uid(), component: "nav_link", label: "Blog", link: { id: "", url: "/blog", linktype: "url", fieldtype: "multilink", cached_url: "/blog" }, children: [] },
+      { _uid: uid(), component: "nav_link", label: "Contact", link: { id: "", url: "/contact", linktype: "url", fieldtype: "multilink", cached_url: "/contact" }, children: [] },
     ],
     footer_columns: [
       {
