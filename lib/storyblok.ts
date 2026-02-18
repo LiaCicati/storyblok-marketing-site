@@ -14,48 +14,22 @@ export const getStoryblokApi = storyblokInit({
   },
 });
 
-/**
- * Resolves a URL slug to a Storyblok story slug.
- * Stories may live in folders (e.g., "pages/services") but the frontend
- * URL only shows "services". This function tries the direct slug first,
- * then falls back to the "pages/" folder prefix.
- */
-async function resolveAndFetchStory(slug: string, params?: Record<string, unknown>) {
-  const storyblokApi = getStoryblokApi();
-
-  // Try direct slug first (works for root stories like "home", "config")
-  try {
-    const { data } = await storyblokApi.get(`cdn/stories/${slug}`, {
-      version: "draft",
-      ...params,
-    });
-    if (data?.story) return data.story;
-  } catch {
-    // Not found at root level — try folder
-  }
-
-  // Try with pages/ prefix (for stories organized in folders)
-  if (!slug.startsWith("pages/")) {
-    try {
-      const { data } = await storyblokApi.get(`cdn/stories/pages/${slug}`, {
-        version: "draft",
-        ...params,
-      });
-      if (data?.story) return data.story;
-    } catch {
-      // Not found in folder either
-    }
-  }
-
-  return null;
-}
+/** Root-level slugs that are NOT inside the pages/ folder */
+const ROOT_SLUGS = new Set(["home", "config"]);
 
 export async function fetchStory(slug: string, params?: Record<string, unknown>) {
-  const story = await resolveAndFetchStory(slug, params);
-  if (!story) {
-    throw new Error(`Story not found: ${slug}`);
-  }
-  return story;
+  const storyblokApi = getStoryblokApi();
+
+  // Determine the Storyblok path: root-level stories keep their slug,
+  // everything else lives in the pages/ folder
+  const storyblokSlug =
+    slug.startsWith("pages/") || ROOT_SLUGS.has(slug) ? slug : `pages/${slug}`;
+
+  const { data } = await storyblokApi.get(`cdn/stories/${storyblokSlug}`, {
+    version: "draft",
+    ...params,
+  });
+  return data?.story;
 }
 
 export async function fetchStories(params?: Record<string, unknown>) {
