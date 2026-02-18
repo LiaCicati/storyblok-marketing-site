@@ -40,7 +40,10 @@ async function api(path: string, method: string = "GET", body?: unknown) {
     throw new Error(`${method} ${path} failed (${res.status}): ${text}`);
   }
 
-  return res.json();
+  // Handle empty responses (e.g., DELETE or some PUT calls)
+  const text = await res.text();
+  if (!text) return {};
+  return JSON.parse(text);
 }
 
 async function sleep(ms: number) {
@@ -367,6 +370,8 @@ const components: ComponentDef[] = [
     },
   },
   // --- Contact Form ---
+  // Labels & placeholders come from the "form-labels" datasource (reusable across pages).
+  // Only section-level fields (title, subtitle) stay on the blok.
   {
     name: "contact_form",
     display_name: "Contact Form",
@@ -374,15 +379,13 @@ const components: ComponentDef[] = [
     schema: {
       title: { type: "text", pos: 0, display_name: "Title", translatable: true },
       subtitle: { type: "text", pos: 1, display_name: "Subtitle", translatable: true },
-      name_label: { type: "text", pos: 2, display_name: "Name Label", default_value: "Name", translatable: true },
-      name_placeholder: { type: "text", pos: 3, display_name: "Name Placeholder", default_value: "Your name", translatable: true },
-      email_label: { type: "text", pos: 4, display_name: "Email Label", default_value: "Email", translatable: true },
-      email_placeholder: { type: "text", pos: 5, display_name: "Email Placeholder", default_value: "you@example.com", translatable: true },
-      message_label: { type: "text", pos: 6, display_name: "Message Label", default_value: "Message", translatable: true },
-      message_placeholder: { type: "text", pos: 7, display_name: "Message Placeholder", default_value: "How can we help you?", translatable: true },
-      button_label: { type: "text", pos: 8, display_name: "Button Label", default_value: "Send Message", translatable: true },
-      success_title: { type: "text", pos: 9, display_name: "Success Title", default_value: "Thank you!", translatable: true },
-      success_message: { type: "text", pos: 10, display_name: "Success Message", default_value: "Your message has been received. We'll get back to you shortly.", translatable: true },
+      info: {
+        type: "text",
+        pos: 2,
+        display_name: "ℹ️ Form labels",
+        description: "Form labels & placeholders are managed in the \"Form Labels\" datasource (Content → Datasources) so they can be reused across pages.",
+        default_value: "→ Edit in Datasources",
+      },
     },
   },
   // --- Logo Item (nestable) ---
@@ -787,15 +790,6 @@ const contactContent = {
       component: "contact_form",
       title: "Send Us a Message",
       subtitle: "Fill out the form below and our team will respond within one business day.",
-      name_label: "Name",
-      name_placeholder: "Your name",
-      email_label: "Email",
-      email_placeholder: "you@example.com",
-      message_label: "Message",
-      message_placeholder: "How can we help you?",
-      button_label: "Send Message",
-      success_title: "Thank you!",
-      success_message: "Your message has been received. We'll get back to you within one business day.",
     },
     {
       _uid: uid(),
@@ -1104,16 +1098,7 @@ const romanianTranslations: Record<string, any> = {
         _uid: uid(),
         component: "contact_form",
         title: "Trimite-ne un Mesaj",
-        subtitle: "Completeaz\u0103 formularul de mai jos \u0219i echipa noastr\u0103 va r\u0103spunde \u00EEn termen de o zi lucr\u0103toare.",
-        name_label: "Nume",
-        name_placeholder: "Numele t\u0103u",
-        email_label: "Email",
-        email_placeholder: "tu@exemplu.com",
-        message_label: "Mesaj",
-        message_placeholder: "Cum te putem ajuta?",
-        button_label: "Trimite Mesajul",
-        success_title: "Mul\u021Bumim!",
-        success_message: "Mesajul t\u0103u a fost primit. \u00CE\u021Bi vom r\u0103spunde \u00EEn termen de o zi lucr\u0103toare.",
+        subtitle: "Completează formularul de mai jos și echipa noastră va răspunde în termen de o zi lucrătoare.",
       },
       {
         _uid: uid(),
@@ -1206,6 +1191,22 @@ function mergeTranslations(en: any, ro: any, lang = "ro"): any {
   return en;
 }
 
+// ---------- Datasource: Form Labels ----------
+// Reusable key-value pairs for form UI. Editors change these in one place
+// and every page that uses a contact form picks them up automatically.
+
+const formLabelsEntries: { name: string; value: string; ro: string }[] = [
+  { name: "form_name_label", value: "Name", ro: "Nume" },
+  { name: "form_name_placeholder", value: "Your name", ro: "Numele tău" },
+  { name: "form_email_label", value: "Email", ro: "Email" },
+  { name: "form_email_placeholder", value: "you@example.com", ro: "tu@exemplu.com" },
+  { name: "form_message_label", value: "Message", ro: "Mesaj" },
+  { name: "form_message_placeholder", value: "How can we help you?", ro: "Cum te putem ajuta?" },
+  { name: "form_button_label", value: "Send Message", ro: "Trimite Mesajul" },
+  { name: "form_success_title", value: "Thank you!", ro: "Mulțumim!" },
+  { name: "form_success_message", value: "Your message has been received. We'll get back to you within one business day.", ro: "Mesajul tău a fost primit. Îți vom răspunde în termen de o zi lucrătoare." },
+];
+
 // ---------- Main ----------
 
 async function main() {
@@ -1229,8 +1230,134 @@ async function main() {
   }
   await sleep(300);
 
+  // Step 0.5: Create "form_labels" datasource with Romanian dimension
+  console.log("[0.5/6] Creating form_labels datasource...");
+  let datasourceId: number | null = null;
+  let roDimensionId: number | null = null;
+
+  // Check for existing datasource
+  try {
+    const { datasources } = await apiSafe("/datasources");
+    for (const ds of datasources) {
+      if (ds.slug === "form-labels") {
+        datasourceId = ds.id;
+        // Find Romanian dimension
+        if (ds.dimensions) {
+          for (const dim of ds.dimensions) {
+            if (dim.entry_value === "ro") {
+              roDimensionId = dim.id;
+            }
+          }
+        }
+        console.log(`  Datasource "form-labels" already exists (id: ${datasourceId})`);
+      }
+    }
+  } catch {
+    // No datasources yet
+  }
+
+  if (!datasourceId) {
+    console.log("  Creating datasource: form-labels...");
+    const dsRes = await apiSafe("/datasources", "POST", {
+      datasource: {
+        name: "Form Labels",
+        slug: "form-labels",
+        dimensions_attributes: [
+          { name: "Romanian", entry_value: "ro" },
+        ],
+      },
+    });
+    datasourceId = dsRes.datasource.id;
+    // Get dimension ID from created datasource
+    if (dsRes.datasource.dimensions) {
+      for (const dim of dsRes.datasource.dimensions) {
+        if (dim.entry_value === "ro") {
+          roDimensionId = dim.id;
+        }
+      }
+    }
+    console.log(`  ✓ Created datasource (id: ${datasourceId}, ro dim: ${roDimensionId})`);
+    await sleep(300);
+  }
+
+  // If dimension not found, add it
+  if (!roDimensionId && datasourceId) {
+    console.log("  Adding Romanian dimension to datasource...");
+    const dsUpdated = await apiSafe(`/datasources/${datasourceId}`, "PUT", {
+      datasource: {
+        dimensions_attributes: [
+          { name: "Romanian", entry_value: "ro" },
+        ],
+      },
+    });
+    if (dsUpdated.datasource.dimensions) {
+      for (const dim of dsUpdated.datasource.dimensions) {
+        if (dim.entry_value === "ro") {
+          roDimensionId = dim.id;
+        }
+      }
+    }
+    console.log(`  ✓ Romanian dimension id: ${roDimensionId}`);
+    await sleep(300);
+  }
+
+  // Create/update datasource entries
+  console.log("  Seeding form label entries...");
+
+  // Fetch existing entries
+  const existingEntries = new Map<string, number>();
+  try {
+    const { datasource_entries: entries } = await apiSafe(`/datasource_entries?datasource_id=${datasourceId}`);
+    for (const entry of entries) {
+      existingEntries.set(entry.name, entry.id);
+    }
+  } catch {
+    // No entries yet
+  }
+
+  for (const entry of formLabelsEntries) {
+    const existingEntryId = existingEntries.get(entry.name);
+
+    if (existingEntryId) {
+      // Update existing entry with default value
+      console.log(`    Updating: ${entry.name} = "${entry.value}"`);
+      await apiSafe(`/datasource_entries/${existingEntryId}`, "PUT", {
+        datasource_entry: {
+          name: entry.name,
+          value: entry.value,
+        },
+      });
+    } else {
+      // Create new entry
+      console.log(`    Creating: ${entry.name} = "${entry.value}"`);
+      const entryRes = await apiSafe("/datasource_entries", "POST", {
+        datasource_entry: {
+          datasource_id: datasourceId,
+          name: entry.name,
+          value: entry.value,
+        },
+      });
+      existingEntries.set(entry.name, entryRes.datasource_entry.id);
+    }
+    await sleep(200);
+
+    // Set Romanian translation
+    const entryId = existingEntries.get(entry.name)!;
+    console.log(`    Setting RO: ${entry.name} = "${entry.ro}"`);
+    await apiSafe(`/datasource_entries/${entryId}`, "PUT", {
+      datasource_entry: {
+        name: entry.name,
+        value: entry.value,
+        dimension_value: entry.ro,
+      },
+      dimension_id: roDimensionId,
+    });
+    await sleep(200);
+  }
+  console.log(`  ✓ ${formLabelsEntries.length} form label entries seeded with Romanian translations\n`);
+
   // Step 1: Fetch/create components
-  console.log("[1/3] Fetching existing components...");
+  console.log("[1/6] Fetching existing components...");
   const { components: existing } = await apiSafe("/components");
   const existingMap = new Map<string, number>();
   for (const comp of existing) {

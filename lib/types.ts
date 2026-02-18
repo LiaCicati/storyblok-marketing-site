@@ -136,15 +136,7 @@ export interface ContactFormBlok extends SbBlokData {
   component: "contact_form";
   title: string;
   subtitle: string;
-  name_label: string;
-  name_placeholder: string;
-  email_label: string;
-  email_placeholder: string;
-  message_label: string;
-  message_placeholder: string;
-  button_label: string;
-  success_title: string;
-  success_message: string;
+  // Labels & placeholders come from the "form-labels" datasource
 }
 
 export interface LogoCloudBlok extends SbBlokData {
