@@ -378,9 +378,52 @@ const components: ComponentDef[] = [
       },
     },
   },
+  // --- Form Field (nestable) ---
+  {
+    name: "form_field",
+    display_name: "Form Field",
+    is_nestable: true,
+    schema: {
+      label: { type: "text", pos: 0, display_name: "Label", required: true, translatable: true },
+      name: { type: "text", pos: 1, display_name: "Field Name", required: true, description: "HTML name attribute (e.g. 'email', 'company'). Must be unique within the form." },
+      type: {
+        type: "option",
+        pos: 2,
+        display_name: "Field Type",
+        options: [
+          { name: "Text", value: "text" },
+          { name: "Email", value: "email" },
+          { name: "Phone", value: "tel" },
+          { name: "Number", value: "number" },
+          { name: "URL", value: "url" },
+          { name: "Textarea", value: "textarea" },
+          { name: "Select", value: "select" },
+          { name: "Checkbox", value: "checkbox" },
+        ],
+        default_value: "text",
+      },
+      placeholder: { type: "text", pos: 3, display_name: "Placeholder", translatable: true },
+      required: { type: "boolean", pos: 4, display_name: "Required", default_value: false },
+      width: {
+        type: "option",
+        pos: 5,
+        display_name: "Width",
+        options: [
+          { name: "Full Width", value: "full" },
+          { name: "Half Width", value: "half" },
+        ],
+        default_value: "full",
+      },
+      options: {
+        type: "textarea",
+        pos: 6,
+        display_name: "Options (for Select)",
+        description: "One option per line. Only used when Field Type is 'Select'.",
+        translatable: true,
+      },
+    },
+  },
   // --- Contact Form ---
-  // Labels & placeholders come from the "form-labels" datasource (reusable across pages).
-  // Only section-level fields (title, subtitle) stay on the blok.
   {
     name: "contact_form",
     display_name: "Contact Form",
@@ -388,13 +431,18 @@ const components: ComponentDef[] = [
     schema: {
       title: { type: "text", pos: 0, display_name: "Title", translatable: true },
       subtitle: { type: "text", pos: 1, display_name: "Subtitle", translatable: true },
-      info: {
-        type: "text",
+      fields: {
+        type: "bloks",
         pos: 2,
-        display_name: "ℹ️ Form labels",
-        description: "Form labels & placeholders are managed in the \"Form Labels\" datasource (Content → Datasources) so they can be reused across pages.",
-        default_value: "→ Edit in Datasources",
+        display_name: "Form Fields",
+        restrict_type: "groups",
+        restrict_components: true,
+        component_whitelist: ["form_field"],
+        description: "Add and configure form fields. Drag to reorder.",
       },
+      submit_label: { type: "text", pos: 3, display_name: "Submit Button Label", default_value: "Send Message", translatable: true },
+      success_title: { type: "text", pos: 4, display_name: "Success Title", default_value: "Thank you!", translatable: true },
+      success_message: { type: "text", pos: 5, display_name: "Success Message", default_value: "Your message has been received.", translatable: true },
     },
   },
   // --- Logo Item (nestable) ---
@@ -807,6 +855,15 @@ const contactContent = {
       component: "contact_form",
       title: "Send Us a Message",
       subtitle: "Fill out the form below and our team will respond within one business day.",
+      submit_label: "Send Message",
+      success_title: "Thank you!",
+      success_message: "Your message has been received. We'll get back to you within one business day.",
+      fields: [
+        { _uid: uid(), component: "form_field", label: "Name", name: "name", type: "text", placeholder: "Your name", required: true, width: "half", options: "" },
+        { _uid: uid(), component: "form_field", label: "Email", name: "email", type: "email", placeholder: "you@example.com", required: true, width: "half", options: "" },
+        { _uid: uid(), component: "form_field", label: "Subject", name: "subject", type: "select", placeholder: "", required: false, width: "full", options: "General Inquiry\nProject Quote\nSupport\nPartnership" },
+        { _uid: uid(), component: "form_field", label: "Message", name: "message", type: "textarea", placeholder: "How can we help?", required: true, width: "full", options: "" },
+      ],
     },
     {
       _uid: uid(),
@@ -1124,6 +1181,15 @@ const romanianTranslations: Record<string, any> = {
         component: "contact_form",
         title: "Trimite-ne un Mesaj",
         subtitle: "Completează formularul de mai jos și echipa noastră va răspunde în termen de o zi lucrătoare.",
+        submit_label: "Trimite Mesajul",
+        success_title: "Mulțumim!",
+        success_message: "Mesajul tău a fost primit. Îți vom răspunde în termen de o zi lucrătoare.",
+        fields: [
+          { _uid: uid(), component: "form_field", label: "Nume", name: "name", type: "text", placeholder: "Numele tău", required: true, width: "half", options: "" },
+          { _uid: uid(), component: "form_field", label: "Email", name: "email", type: "email", placeholder: "tu@exemplu.com", required: true, width: "half", options: "" },
+          { _uid: uid(), component: "form_field", label: "Subiect", name: "subject", type: "select", placeholder: "", required: false, width: "full", options: "Întrebare generală\nCerere de ofertă\nSuport\nParteneriat" },
+          { _uid: uid(), component: "form_field", label: "Mesaj", name: "message", type: "textarea", placeholder: "Cum te putem ajuta?", required: true, width: "full", options: "" },
+        ],
       },
       {
         _uid: uid(),

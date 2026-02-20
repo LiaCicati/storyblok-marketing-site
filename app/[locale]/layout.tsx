@@ -1,12 +1,10 @@
 import StoryblokProvider from "@/components/StoryblokProvider";
 import Header from "@/components/layout/Header";
 import Footer from "@/components/layout/Footer";
-import { fetchConfig, fetchFormLabels } from "@/lib/storyblok";
+import { fetchConfig } from "@/lib/storyblok";
 import { i18n, isValidLocale } from "@/lib/i18n";
-import type { Locale } from "@/lib/i18n";
 import type { ConfigBlok } from "@/lib/types";
 import { LocaleProvider } from "@/lib/locale-context";
-import { FormLabelsProvider } from "@/lib/form-labels-context";
 import { notFound } from "next/navigation";
 
 interface LocaleLayoutProps {
@@ -26,21 +24,15 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
   }
 
   let config: ConfigBlok | null = null;
-  let formLabels: Record<string, string> = {};
   try {
-    const [story, labels] = await Promise.all([
-      fetchConfig(locale),
-      fetchFormLabels(locale as Locale),
-    ]);
+    const story = await fetchConfig(locale);
     config = story?.content as ConfigBlok;
-    formLabels = labels;
   } catch {
-    // Config story or datasource might not exist yet
+    // Config story might not exist yet
   }
 
   return (
-    <LocaleProvider locale={locale as Locale}>
-      <FormLabelsProvider labels={formLabels}>
+    <LocaleProvider locale={locale}>
       <StoryblokProvider>
         <div lang={locale} className="flex min-h-screen flex-col">
           <Header
@@ -61,7 +53,6 @@ export default async function LocaleLayout({ children, params }: LocaleLayoutPro
           />
         </div>
       </StoryblokProvider>
-      </FormLabelsProvider>
     </LocaleProvider>
   );
 }

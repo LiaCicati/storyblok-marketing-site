@@ -133,11 +133,25 @@ export interface PricingCardBlok extends SbBlokData {
   popular_badge_text: string;
 }
 
+export interface FormFieldBlok extends SbBlokData {
+  component: "form_field";
+  label: string;
+  name: string;
+  type: "text" | "email" | "tel" | "number" | "url" | "textarea" | "select" | "checkbox";
+  placeholder: string;
+  required: boolean;
+  width: "full" | "half";
+  options: string;
+}
+
 export interface ContactFormBlok extends SbBlokData {
   component: "contact_form";
   title: string;
   subtitle: string;
-  // Labels & placeholders come from the "form-labels" datasource
+  fields: FormFieldBlok[];
+  submit_label: string;
+  success_title: string;
+  success_message: string;
 }
 
 export interface LogoCloudBlok extends SbBlokData {
